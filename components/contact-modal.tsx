@@ -30,24 +30,41 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
         e.preventDefault();
         setIsSubmitting(true);
 
-        // Create mailto link with form data
-        const mailtoLink = `mailto:abbaszayn08@gmail.com?subject=${encodeURIComponent(
-            formData.subject
-        )}&body=${encodeURIComponent(
-            `Name: ${formData.name}\nEmail: ${formData.email}\nCountry: ${formData.country}\n\nMessage:\n${formData.message}`
-        )}`;
+        try {
+            const response = await fetch("https://api.web3forms.com/submit", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Accept: "application/json",
+                },
+                body: JSON.stringify({
+                    access_key: "d92b46d2-9ce5-4632-b3c5-abc5781bf34a", // 🔥 Put your Web3Forms access key here
+                    name: formData.name,
+                    email: formData.email,
+                    subject: formData.subject,
+                    message: `Country: ${formData.country || 'Not provided'}\n\nMessage:\n${formData.message}`,
+                }),
+            });
 
-        window.location.href = mailtoLink;
+            const result = await response.json();
 
-        setTimeout(() => {
+            if (result.success) {
+                setSubmitted(true);
+                setTimeout(() => {
+                    setSubmitted(false);
+                    onClose();
+                    setFormData({ name: "", email: "", country: "", subject: "", message: "" });
+                }, 2000);
+            } else {
+                console.error("Form submission failed:", result);
+                alert("Something went wrong. Please try again.");
+            }
+        } catch (error) {
+            console.error("Error submitting form:", error);
+            alert("Something went wrong. Please try again later.");
+        } finally {
             setIsSubmitting(false);
-            setSubmitted(true);
-            setTimeout(() => {
-                setSubmitted(false);
-                onClose();
-                setFormData({ name: "", email: "", country: "", subject: "", message: "" });
-            }, 2000);
-        }, 500);
+        }
     };
 
     return (
@@ -96,7 +113,7 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
                                 >
                                     <div className="text-6xl mb-4">✅</div>
                                     <p className="text-lg font-semibold text-green-600 dark:text-green-400">
-                                        Opening your email client...
+                                        Message sent successfully!
                                     </p>
                                 </motion.div>
                             ) : (
@@ -201,8 +218,9 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
                             )}
                         </form>
                     </motion.div>
-                </motion.div>
-            )}
-        </AnimatePresence>
+                </motion.div >
+            )
+            }
+        </AnimatePresence >
     );
 }
