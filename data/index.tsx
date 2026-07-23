@@ -66,19 +66,27 @@ export const works = [
     link: "https://mustdashboard.vercel.app/"
   },
   {
+    title: "Game of Stones",
+    description:
+      "Game of Stones connects global investors with licensed mining operators across Gilgit Baltistan — copper, gold, lithium, nephrite, antimony, and polymetallic assets.",
+    className: "md:col-span-1",
+    image: "/images/works/gos-new.png",
+    link: "https://game-of-stones.vercel.app/"
+  },
+  {
+    title: "TheNest-Camp Management System",
+    description: "A comprehensive camp management system featuring web and mobile interfaces for efficient scheduling, meal tracking, and activity management.",
+    className: "md:col-span-1",
+    image: "/images/works/thenest.png",
+    link: "https://drive.google.com/drive/folders/1zKuvclKsyEmrHAwSKMqsxDo-utZOzC0U?usp=sharing"
+  },
+  {
     title: "Mine Explorer- The Game of Stones",
     description:
       "AI-powered automation for geological report insights and real-time chatbot assistance for investors and visitors.",
     className: "md:col-span-1",
     image: "/images/works/gos.jpg",
     link: "https://gbmining.vercel.app/"
-  },
-  {
-    title: "Diseases Detection and Drug Recommending Model",
-    description: " AI based model which detects diseases from user input and recommends top three medicines.",
-    className: "md:col-span-1",
-    image: "/images/works/work4.png",
-    link: "/"
   },
   {
     title: "Aqua Guage",
