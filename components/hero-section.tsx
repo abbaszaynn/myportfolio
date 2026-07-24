@@ -53,9 +53,9 @@ function NeonTechLogo({ isDark }: { isDark: boolean }) {
 
     // Dynamic color transition based on theme
     if (materialRef.current) {
-      // Use subtle slate/gray for dark mode (standard look), dark slate for light mode
-      const targetEmissive = isDark ? new THREE.Color("#475569") : new THREE.Color("#000000"); 
-      const targetColor = isDark ? new THREE.Color("#334155") : new THREE.Color("#0f172a"); 
+      // Use subtle slate/gray for dark mode (standard look), and medium slate for light mode
+      const targetEmissive = isDark ? new THREE.Color("#475569") : new THREE.Color("#94a3b8"); 
+      const targetColor = isDark ? new THREE.Color("#334155") : new THREE.Color("#cbd5e1"); 
       
       materialRef.current.emissive.lerp(targetEmissive, 0.05);
       materialRef.current.color.lerp(targetColor, 0.05);
@@ -69,10 +69,10 @@ function NeonTechLogo({ isDark }: { isDark: boolean }) {
         <meshStandardMaterial
           ref={materialRef}
           wireframe={true}
-          emissiveIntensity={isDark ? 0.5 : 0}
+          emissiveIntensity={isDark ? 0.5 : 0.2}
           toneMapped={false}
           transparent
-          opacity={isDark ? 0.4 : 0.8}
+          opacity={isDark ? 0.4 : 0.5}
         />
       </mesh>
 
