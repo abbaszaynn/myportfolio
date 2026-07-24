@@ -158,17 +158,15 @@ function ZirconHeadline({ isDark }: { isDark: boolean }) {
       {chars.map((ch, i) => (
         <span
           key={i}
-          className="char inline-block"
+          className="char inline-block bg-clip-text text-transparent"
           style={{
             opacity: 0,
-            background: isDark
+            backgroundImage: isDark
               ? "linear-gradient(175deg, #f5f0e6 0%, #c9a55a 50%, #7a5c2e 100%)"
               : "linear-gradient(175deg, #c9a55a 0%, #9c7b38 50%, #4a371c 100%)",
             WebkitBackgroundClip: "text",
             WebkitTextFillColor: "transparent",
             backgroundClip: "text",
-            // Add a subtle drop shadow in light mode for extra pop
-            filter: isDark ? "none" : "drop-shadow(0px 4px 6px rgba(0,0,0,0.15))"
           }}
         >
           {ch}
