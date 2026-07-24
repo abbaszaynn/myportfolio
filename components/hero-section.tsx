@@ -53,9 +53,9 @@ function NeonTechLogo({ isDark }: { isDark: boolean }) {
 
     // Dynamic color transition based on theme
     if (materialRef.current) {
-      // Use bright cyan/neon blue for dark mode, dark slate for light mode
-      const targetEmissive = isDark ? new THREE.Color("#0ea5e9") : new THREE.Color("#000000"); 
-      const targetColor = isDark ? new THREE.Color("#0ea5e9") : new THREE.Color("#0f172a"); 
+      // Use subtle slate/gray for dark mode (standard look), dark slate for light mode
+      const targetEmissive = isDark ? new THREE.Color("#475569") : new THREE.Color("#000000"); 
+      const targetColor = isDark ? new THREE.Color("#334155") : new THREE.Color("#0f172a"); 
       
       materialRef.current.emissive.lerp(targetEmissive, 0.05);
       materialRef.current.color.lerp(targetColor, 0.05);
@@ -69,10 +69,10 @@ function NeonTechLogo({ isDark }: { isDark: boolean }) {
         <meshStandardMaterial
           ref={materialRef}
           wireframe={true}
-          emissiveIntensity={isDark ? 1.2 : 0}
+          emissiveIntensity={isDark ? 0.5 : 0}
           toneMapped={false}
           transparent
-          opacity={0.8}
+          opacity={isDark ? 0.4 : 0.8}
         />
       </mesh>
 
@@ -118,7 +118,7 @@ function HeroCanvas({ isDark }: { isDark: boolean }) {
         {/* Safe, stable Bloom via three-stdlib and drei Effects */}
         <Effects disableGamma>
           {/* @ts-ignore */}
-          <unrealBloomPass threshold={0.1} strength={isDark ? 0.75 : 0} radius={0.5} />
+          <unrealBloomPass threshold={0.2} strength={isDark ? 0.3 : 0} radius={0.5} />
         </Effects>
       </Suspense>
     </Canvas>
