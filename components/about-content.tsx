@@ -46,13 +46,14 @@ export default function AboutContent() {
         {/* Intro Block with Photo 1 */}
         <FadeIn>
           <div className="w-full flex flex-col gap-12">
-            <div className="w-full h-[40vh] md:h-[600px] relative overflow-hidden">
+            <div className="w-full h-[50vh] md:h-[600px] relative overflow-hidden">
               <Image
                 src="/images/about/photo1.jpg"
                 alt="Zain Abbas Intro"
                 fill
                 priority
                 className="object-cover"
+                style={{ objectPosition: 'center 10%' }}
               />
             </div>
             

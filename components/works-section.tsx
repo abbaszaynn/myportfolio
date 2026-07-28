@@ -44,7 +44,7 @@ function WorksCarousel({ projects }: { projects: typeof works }) {
       {/* LEFT COLUMN: Text Content */}
       <div className="w-full md:w-1/2 flex flex-col justify-center px-4 md:px-12 z-20 h-[350px] md:h-auto">
         
-        <div className="relative h-[220px] md:h-[250px] w-full mb-6 md:mb-8">
+        <div className="relative h-[280px] md:h-[250px] w-full mb-6 md:mb-8">
           <AnimatePresence mode="wait">
             <motion.div
               key={activeIndex}
@@ -76,12 +76,12 @@ function WorksCarousel({ projects }: { projects: typeof works }) {
         </div>
 
         {/* Arrows beneath text */}
-        <div className="flex gap-4">
-          <button onClick={handlePrev} className="p-3 border border-white/20 rounded-full hover:bg-white/10 hover:border-[#D4AF37] transition-colors group">
-            <ArrowLeft className="w-5 h-5 text-white group-hover:text-[#D4AF37] transition-colors" />
+        <div className="flex gap-8">
+          <button onClick={handlePrev} className="p-2 hover:text-[#D4AF37] transition-colors group">
+            <ArrowLeft className="w-6 h-6 text-white group-hover:text-[#D4AF37] transition-colors" strokeWidth={1.5} />
           </button>
-          <button onClick={handleNext} className="p-3 border border-white/20 rounded-full hover:bg-white/10 hover:border-[#D4AF37] transition-colors group">
-            <ArrowRight className="w-5 h-5 text-white group-hover:text-[#D4AF37] transition-colors" />
+          <button onClick={handleNext} className="p-2 hover:text-[#D4AF37] transition-colors group">
+            <ArrowRight className="w-6 h-6 text-white group-hover:text-[#D4AF37] transition-colors" strokeWidth={1.5} />
           </button>
         </div>
       </div>

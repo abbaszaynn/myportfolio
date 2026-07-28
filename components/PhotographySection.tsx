@@ -232,7 +232,17 @@ export default function PhotographySection() {
         <div 
           ref={containerRef}
           onMouseMove={handleMouseMove}
+          onTouchMove={(e) => {
+            if (e.touches.length > 0) {
+              const touch = e.touches[0];
+              handleMouseMove({
+                clientX: touch.clientX,
+                clientY: touch.clientY,
+              } as React.MouseEvent);
+            }
+          }}
           onMouseLeave={handleMouseLeave}
+          onTouchEnd={handleMouseLeave}
           className="relative w-full min-h-[85vh] flex flex-col items-center justify-center overflow-hidden cursor-crosshair group border-y border-white/[0.04]"
         >
           {/* Default Text behind the images */}
