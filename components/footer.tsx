@@ -1,13 +1,12 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
 import { cormorant, spaceGrotesk } from "@/data/constants/fonts";
 import { socialMedia } from "@/data/index";
-import ContactModal from "./contact-modal";
+import Link from "next/link";
 
 export default function Footer() {
-  const [isContactOpen, setIsContactOpen] = useState(false);
   const ref = useRef<HTMLElement>(null);
   const isInView = useInView(ref, { once: true, margin: "-80px" });
 
@@ -39,21 +38,24 @@ export default function Footer() {
             together.
           </motion.h2>
 
-          <motion.button
-            onClick={() => setIsContactOpen(true)}
-            className="mt-12 group relative overflow-hidden uppercase text-[11px] tracking-[0.25em] font-medium
-              border border-[#c9a55a]/30 rounded-full px-12 py-5
-              text-[#c9a55a] bg-transparent
-              transition-all duration-500 ease-out
-              hover:border-[#c9a55a]/70 hover:bg-[#c9a55a]/5
-              hover:shadow-[0_0_60px_rgba(201,165,90,0.12)]
-              active:scale-95 cursor-pointer"
+          <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={isInView ? { opacity: 1, y: 0 } : {}}
             transition={{ delay: 0.4, duration: 0.8 }}
           >
-            Start a Conversation
-          </motion.button>
+            <Link
+              href="/contact"
+              className="mt-12 group relative overflow-hidden uppercase text-[11px] tracking-[0.25em] font-medium
+                border border-[#c9a55a]/30 rounded-full px-12 py-5
+                text-[#c9a55a] bg-transparent
+                transition-all duration-500 ease-out
+                hover:border-[#c9a55a]/70 hover:bg-[#c9a55a]/5
+                hover:shadow-[0_0_60px_rgba(201,165,90,0.12)]
+                active:scale-95 cursor-pointer inline-block"
+            >
+              Start a Conversation
+            </Link>
+          </motion.div>
         </div>
 
         {/* Bottom bar */}
@@ -92,8 +94,6 @@ export default function Footer() {
           </div>
         </div>
       </footer>
-
-      <ContactModal isOpen={isContactOpen} onClose={() => setIsContactOpen(false)} />
     </>
   );
 }

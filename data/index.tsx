@@ -6,7 +6,7 @@ import {
   Code,
   Braces,
 } from "lucide-react";
-import { FaGithub, FaLinkedinIn, FaInstagram } from "react-icons/fa6";
+import { FaGithub, FaLinkedinIn, FaInstagram, FaWhatsapp, FaEnvelope } from "react-icons/fa6";
 
 export const navItems = [
   { name: "Services", link: "#services" },
@@ -193,6 +193,16 @@ export const socialMedia = [
     id: 3,
     img: <FaInstagram />,
     href: "https://www.instagram.com/abbas__zayn?igsh=MWVqb2V0ZjI1cHRucA==",
+  },
+  {
+    id: 4,
+    img: <FaWhatsapp />,
+    href: "https://wa.me/923169244827",
+  },
+  {
+    id: 5,
+    img: <FaEnvelope />,
+    href: "mailto:abbaszayn08@gmail.com",
   },
 ];
 

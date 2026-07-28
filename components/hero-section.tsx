@@ -165,8 +165,8 @@ export default function HeroSection() {
         <Link href="#works" className="font-sans pl-1 text-[9px] md:text-[10px] uppercase font-semibold tracking-[0.2em] text-white/70 hover:text-white transition-colors duration-300">
           Works
         </Link>
-        <Link href="#consultation" className="font-sans pl-1 text-[9px] md:text-[10px] uppercase font-semibold tracking-[0.2em] text-white/70 hover:text-white transition-colors duration-300">
-          Consultation
+        <Link href="/gallery" className="font-sans pl-1 text-[9px] md:text-[10px] uppercase font-semibold tracking-[0.2em] text-white/70 hover:text-white transition-colors duration-300">
+          Passion
         </Link>
         {/* Placeholder element to maintain flex-between spacing since About moved */}
         <div className="h-4 text-[9px] md:text-[10px]"></div>
@@ -174,7 +174,7 @@ export default function HeroSection() {
 
       {/* Right Vertical Branding & Nav - Spaced evenly across full height to align perfectly with left side */}
       <div className="absolute py-8 md:py-12 right-8 md:right-12 top-0 bottom-0 z-50 flex flex-col justify-between items-end pointer-events-auto text-right">
-        <Link href="#connect" className="font-sans pr-1 text-[9px] md:text-[10px] uppercase font-semibold tracking-[0.2em] text-white/70 hover:text-white transition-colors duration-300">
+        <Link href="/contact" className="font-sans pr-1 text-[9px] md:text-[10px] uppercase font-semibold tracking-[0.2em] text-white/70 hover:text-white transition-colors duration-300">
           Connect
         </Link>
         {/* Placeholder aligns with Works */}
