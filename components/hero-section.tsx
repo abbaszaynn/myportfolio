@@ -229,7 +229,7 @@ export default function HeroSection() {
 
         {/* Orbiting Constellation - Absolutely positioned to guarantee perfect center alignment */}
         {mounted && (
-          <div className="absolute top-[45%] md:top-1/2 left-[80%] md:left-1/2 w-0 h-0 z-10 -mt-8 md:mt-0">
+          <div className="absolute top-[45%] md:top-1/2 left-[80%] md:left-1/2 w-0 h-0 z-10 -mt-3 md:mt-0">
             {planets.map((planet) => (
               <OrbitingImage
                 key={planet.id}
