@@ -42,14 +42,21 @@ const planets = [
 function OrbitingImage({
   planet,
   hoveredId,
-  setHoveredId
+  setHoveredId,
+  isMobile
 }: {
   planet: typeof planets[0];
   hoveredId: number | null;
   setHoveredId: (id: number | null) => void;
+  isMobile: boolean;
 }) {
   const isHovered = hoveredId === planet.id;
   const isAnyHovered = hoveredId !== null;
+
+  const rx = isMobile ? planet.radiusX * 0.55 : planet.radiusX;
+  const ry = isMobile ? planet.radiusY * 0.6 : planet.radiusY;
+  const width = isMobile ? planet.width * 0.6 : planet.width;
+  const height = isMobile ? planet.height * 0.6 : planet.height;
 
   const x = useMotionValue(0);
   const y = useMotionValue(0);
@@ -71,12 +78,12 @@ function OrbitingImage({
 
     const t = accumulatedTime.current;
 
-    // Slow, elegant 3D orbit
-    const currentAngle = (planet.angle * Math.PI) / 180 + t * 0.00004;
+    // Slow, elegant 3D orbit (anticlockwise)
+    const currentAngle = (planet.angle * Math.PI) / 180 - t * 0.00004;
 
     // Calculate 2D position (Rigid layout - no organic bobbing to maintain ladder formation)
-    const posX = Math.cos(currentAngle) * planet.radiusX;
-    const posY = Math.sin(currentAngle) * planet.radiusY;
+    const posX = Math.cos(currentAngle) * rx;
+    const posY = Math.sin(currentAngle) * ry;
 
     x.set(posX);
     y.set(posY);
@@ -102,7 +109,7 @@ function OrbitingImage({
     >
       <motion.div
         className="relative overflow-hidden cursor-crosshair -translate-x-1/2 -translate-y-1/2 shadow-2xl group"
-        style={{ width: planet.width, height: planet.height }}
+        style={{ width, height }}
         animate={{
           scale: isHovered ? 1.15 : 1, // Increase size of the hovered image wrapper
           opacity: currentOpacity,
@@ -133,7 +140,7 @@ function OrbitingImage({
 function StaticCenter() {
   return (
     <div className="flex flex-col items-center justify-center pointer-events-auto cursor-default">
-      <h1 className="font-sans text-xl md:text-3xl font-light tracking-[0.6em] text-[#D4AF37] select-none whitespace-nowrap">
+      <h1 className="font-sans text-base md:text-3xl font-light tracking-[0.6em] text-[#D4AF37] select-none whitespace-nowrap mr-[-0.6em] md:mr-0">
         ZIRCON
       </h1>
     </div>
@@ -147,44 +154,59 @@ function StaticCenter() {
 export default function HeroSection() {
   const [mounted, setMounted] = useState(false);
   const [hoveredId, setHoveredId] = useState<number | null>(null);
+  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
     setMounted(true);
+    const handleResize = () => setIsMobile(window.innerWidth < 768);
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   return (
-    <section className="relative w-full h-[100vh] min-h-[800px] flex items-center justify-center overflow-hidden bg-[#0a0a0a]">
+    <section className="relative w-full h-[100vh] min-h-[600px] md:min-h-[800px] flex items-center justify-center overflow-hidden bg-[#0a0a0a]">
       {/* Left Vertical Branding & Nav - Spaced evenly across full height */}
-      <div className="absolute py-8 md:py-12 left-8 md:left-12 top-0 bottom-0 z-50 flex flex-col justify-between items-start pointer-events-auto">
-        <Link href="/">
-          {/* Using clean sans-serif and lowercase */}
-          <h2 className="font-sans text-sm md:text-base font-semibold tracking-widest text-white lowercase">
-            abbas zayn
-          </h2>
-        </Link>
-        <Link href="#works" className="font-sans pl-1 text-[9px] md:text-[10px] uppercase font-semibold tracking-[0.2em] text-white/70 hover:text-white transition-colors duration-300">
-          Works
-        </Link>
-        <Link href="/gallery" className="font-sans pl-1 text-[9px] md:text-[10px] uppercase font-semibold tracking-[0.2em] text-white/70 hover:text-white transition-colors duration-300">
-          Passion
-        </Link>
+      <div className="absolute pt-12 pb-32 md:py-12 left-8 md:left-12 top-0 bottom-0 z-50 flex flex-col justify-between items-start pointer-events-auto">
+        <div className="flex items-center h-6">
+          <Link href="/">
+            {/* Using clean sans-serif and lowercase */}
+            <h2 className="font-sans text-sm md:text-base font-semibold tracking-widest text-white lowercase leading-none">
+              abbas zayn
+            </h2>
+          </Link>
+        </div>
+        <div className="flex items-center h-6">
+          <Link href="#works" className="font-sans pl-1 text-[9px] md:text-[10px] uppercase font-semibold tracking-[0.2em] text-white/70 hover:text-white transition-colors duration-300 leading-none">
+            Works
+          </Link>
+        </div>
+        <div className="flex items-center h-6">
+          <Link href="/gallery" className="font-sans pl-1 text-[9px] md:text-[10px] uppercase font-semibold tracking-[0.2em] text-white/70 hover:text-white transition-colors duration-300 leading-none">
+            Passion
+          </Link>
+        </div>
         {/* Placeholder element to maintain flex-between spacing since About moved */}
-        <div className="h-4 text-[9px] md:text-[10px]"></div>
+        <div className="h-6 w-1 hidden md:block"></div>
       </div>
 
       {/* Right Vertical Branding & Nav - Spaced evenly across full height to align perfectly with left side */}
-      <div className="absolute py-8 md:py-12 right-8 md:right-12 top-0 bottom-0 z-50 flex flex-col justify-between items-end pointer-events-auto text-right">
-        <Link href="/contact" className="font-sans pr-1 text-[9px] md:text-[10px] uppercase font-semibold tracking-[0.2em] text-white/70 hover:text-white transition-colors duration-300">
-          Connect
-        </Link>
+      <div className="absolute pt-12 pb-32 md:py-12 right-8 md:right-12 top-0 bottom-0 z-50 flex flex-col justify-between items-end pointer-events-auto text-right">
+        <div className="flex items-center h-6">
+          <Link href="/contact" className="font-sans pr-1 text-[9px] md:text-[10px] uppercase font-semibold tracking-[0.2em] text-white/70 hover:text-white transition-colors duration-300 leading-none">
+            Connect
+          </Link>
+        </div>
         {/* Placeholder aligns with Works */}
-        <div className="h-4 text-[9px] md:text-[10px]"></div>
+        <div className="h-6 w-1 hidden md:block"></div>
         {/* About aligns with Consultation */}
-        <Link href="/about" className="font-sans pr-1 text-[9px] md:text-[10px] uppercase font-semibold tracking-[0.2em] text-white/70 hover:text-white transition-colors duration-300">
-          About
-        </Link>
+        <div className="flex items-center h-6">
+          <Link href="/about" className="font-sans pr-1 text-[9px] md:text-[10px] uppercase font-semibold tracking-[0.2em] text-white/70 hover:text-white transition-colors duration-300 leading-none">
+            About
+          </Link>
+        </div>
         {/* Placeholder aligns with left bottom placeholder */}
-        <div className="h-4 text-[9px] md:text-[10px]"></div>
+        <div className="h-6 w-1 hidden md:block"></div>
       </div>
 
       {/* Background overlay that dims everything down when hovered */}
@@ -199,21 +221,22 @@ export default function HeroSection() {
       />
 
       {/* Container to shift both text and constellation upwards by moving their center */}
-      <div className="relative w-full h-full -mt-24 md:-mt-32">
+      <div className="relative w-full h-full mt-0 md:-mt-32">
         {/* Center Logo - Visually nudged right and down */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[100] mt-6 ml-14">
+        <div className="absolute top-[45%] md:top-1/2 left-[80%] md:left-1/2 -translate-x-1/2 -translate-y-1/2 z-[100] mt-0 md:mt-6 ml-0 md:ml-14">
           <StaticCenter />
         </div>
 
         {/* Orbiting Constellation - Absolutely positioned to guarantee perfect center alignment */}
         {mounted && (
-          <div className="absolute top-1/2 left-1/2 w-0 h-0 z-10">
+          <div className="absolute top-[45%] md:top-1/2 left-[80%] md:left-1/2 w-0 h-0 z-10">
             {planets.map((planet) => (
               <OrbitingImage
                 key={planet.id}
                 planet={planet}
                 hoveredId={hoveredId}
                 setHoveredId={setHoveredId}
+                isMobile={isMobile}
               />
             ))}
           </div>
