@@ -73,8 +73,11 @@ export default function ContactPage() {
             abbas zayn
           </h2>
         </Link>
-        <Link href="/" className="font-sans text-[10px] uppercase font-semibold tracking-[0.2em] text-black/70 hover:text-black transition-colors flex items-center gap-2">
-          <ArrowLeft size={12} /> BACK
+        <Link href="/" className="font-sans text-[10px] md:text-[11px] uppercase font-semibold tracking-[0.2em] text-black/70 hover:text-black transition-colors flex items-center gap-2">
+          <span>BACK</span>
+          <div className="w-4 h-4 border border-black flex items-center justify-center">
+            <div className="w-1.5 h-1.5 bg-black" />
+          </div>
         </Link>
       </div>
 
