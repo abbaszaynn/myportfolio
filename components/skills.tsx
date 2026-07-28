@@ -1,103 +1,115 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
-import { oswald } from "@/data/constants/fonts";
+import { useRef } from "react";
+import { motion, useInView } from "framer-motion";
+import { cormorant, spaceGrotesk } from "@/data/constants/fonts";
 import { skills, skillsIcons } from "@/data/index";
-import GaugeCircle from "./magicui/gauge-circle";
 import IconCloud from "./magicui/icon-cloud";
 
-export default function Skills() {
-  // State to hold the current values of the skills
-  const [values, setValues] = useState<number[]>(skills.map(() => 0));
-  // Ref to the section element
-  const sectionRef = useRef<HTMLElement>(null);
-  // State to track if the section is visible
-  const [isVisible, setIsVisible] = useState(false);
+const barVariant = {
+  hidden: { width: "0%" },
+  visible: (pct: number) => ({
+    width: `${pct}%`,
+    transition: {
+      duration: 1.4,
+      ease: [0.22, 1, 0.36, 1],
+    },
+  }),
+};
 
-  // Effect to set up the Intersection Observer
-  useEffect(() => {
-    const currentSectionRef = sectionRef.current;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting) {
-          setIsVisible(true);
-          observer.disconnect();
-        }
-      },
-      { threshold: 0.1 }
-    );
-
-    if (currentSectionRef) {
-      observer.observe(currentSectionRef);
-    }
-
-    return () => {
-      if (currentSectionRef) {
-        observer.unobserve(currentSectionRef);
-      }
-    };
-  }, []);
-
-  // Effect to handle the animation when the section becomes visible
-  useEffect(() => {
-    if (isVisible) {
-      const intervals = skills.map((skill, index) => {
-        return setInterval(() => {
-          setValues((prevValues) => {
-            const newValues = [...prevValues];
-            // Stop the interval when the value reaches the skill percentage
-            if (newValues[index] >= skill.percentage) {
-              clearInterval(intervals[index]);
-              newValues[index] = skill.percentage;
-            } else {
-              newValues[index] += 10; // Increment the value
-            }
-            return newValues;
-          });
-        }, 300); // Interval time in milliseconds
-      });
-
-      return () => intervals.forEach(clearInterval); // Clean up intervals on unmount
-    }
-  }, [isVisible]);
+function SkillBar({ name, percentage, index }: { name: string; percentage: number; index: number }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const isInView = useInView(ref, { once: true, margin: "-50px" });
 
   return (
-    <section
-      id="skills"
-      className="pb-32 flex flex-col gap-12 lg:gap-24 md:flex-row justify-center items-center"
-      ref={sectionRef}
+    <motion.div
+      ref={ref}
+      className="group"
+      initial={{ opacity: 0, y: 20 }}
+      animate={isInView ? { opacity: 1, y: 0 } : {}}
+      transition={{ delay: index * 0.15, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
     >
-      <div className="flex flex-col items-center">
-        <h1
-          className={`${oswald.className} font-semibold text-2xl md:text-4xl flex flex-col text-center pb-10`}
-        >
-          <span className="text-base text-red-900">Skills</span>
-          <span>
-            What makes me{" "}
-            <span className="text-red-900 dark:text-red-700">
-              so strong
-            </span>
-            ?
-          </span>
-        </h1>
-        <div className="grid grid-cols-2 gap-8 lg:gap-12">
-          {skills.map((skill, index) => (
-            <div key={index} className="flex flex-col items-center gap-2">
-              <GaugeCircle
-                max={100}
-                min={0}
-                value={values[index]}
-                gaugePrimaryColor="#991b1b"
-                gaugeSecondaryColor="rgba(0, 0, 0, 0.1)"
-              />
-              <span className="text-center">{skill.name}</span>
-            </div>
-          ))}
-        </div>
+      <div className="flex justify-between items-baseline mb-3">
+        <span className={`${spaceGrotesk.className} text-sm text-white/70 font-medium tracking-wide`}>
+          {name}
+        </span>
+        <span className={`${spaceGrotesk.className} text-[11px] text-[#c9a55a]/50 tabular-nums`}>
+          {percentage}%
+        </span>
       </div>
-      <div className="flex max-w-[40rem] items-center justify-center overflow-hidden">
-        <IconCloud iconSlugs={skillsIcons} />
+      <div className="w-full h-[2px] bg-white/[0.06] rounded-full overflow-hidden">
+        <motion.div
+          className="h-full rounded-full"
+          style={{
+            background: "linear-gradient(90deg, #c9a55a 0%, #8b6914 100%)",
+          }}
+          variants={barVariant}
+          initial="hidden"
+          animate={isInView ? "visible" : "hidden"}
+          custom={percentage}
+        />
+      </div>
+    </motion.div>
+  );
+}
+
+export default function Skills() {
+  const ref = useRef<HTMLElement>(null);
+  const isInView = useInView(ref, { once: true, margin: "-80px" });
+
+  return (
+    <section ref={ref} id="skills" className="py-24 md:py-32 relative">
+      {/* Section header */}
+      <motion.div
+        className="text-center mb-16 md:mb-20"
+        initial={{ opacity: 0, y: 20 }}
+        animate={isInView ? { opacity: 1, y: 0 } : {}}
+        transition={{ duration: 0.8 }}
+      >
+        <span className={`${spaceGrotesk.className} text-[11px] tracking-[0.4em] uppercase text-[#c9a55a]/60 block mb-4`}>
+          Capabilities
+        </span>
+        <h2 className={`${cormorant.className} text-3xl md:text-5xl lg:text-6xl font-light text-white/90`}>
+          Core{" "}
+          <span className="text-gradient-gold">Strengths</span>
+        </h2>
+      </motion.div>
+
+      {/* Two-column layout: Skill bars + Icon Cloud */}
+      <div className="flex flex-col lg:flex-row items-center gap-16 lg:gap-20">
+        {/* Skill bars */}
+        <div className="w-full lg:w-1/2 space-y-8">
+          {skills.map((skill, index) => (
+            <SkillBar
+              key={skill.name}
+              name={skill.name}
+              percentage={skill.percentage}
+              index={index}
+            />
+          ))}
+
+          {/* Subtle decorative text */}
+          <motion.p
+            className="text-[11px] tracking-[0.2em] text-[#444] mt-8 uppercase"
+            initial={{ opacity: 0 }}
+            animate={isInView ? { opacity: 1 } : {}}
+            transition={{ delay: 1.2, duration: 0.8 }}
+          >
+            Constantly evolving &middot; Always learning
+          </motion.p>
+        </div>
+
+        {/* Icon Cloud */}
+        <div className="w-full lg:w-1/2 flex items-center justify-center">
+          <motion.div
+            className="max-w-[380px] w-full"
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={isInView ? { opacity: 1, scale: 1 } : {}}
+            transition={{ delay: 0.5, duration: 1, ease: "easeOut" }}
+          >
+            <IconCloud iconSlugs={skillsIcons} />
+          </motion.div>
+        </div>
       </div>
     </section>
   );

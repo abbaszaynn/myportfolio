@@ -2,23 +2,37 @@ import Citation from "@/components/citation-section";
 import HeroSection from "@/components/hero-section";
 import Services from "@/components/services";
 import Skills from "@/components/skills";
-import { FloatingNav } from "@/components/ui/floating-navbar";
-import { Meteors } from "@/components/ui/meteors";
 import Works from "@/components/works-section";
-import { navItems } from "@/data/index";
 import PhotographySection from "@/components/PhotographySection";
 
 export default function Home() {
   return (
-    <main className="container">
-      <Meteors number={20} />
-      <FloatingNav navItems={navItems} />
+    <main>
+      {/* Act I — The Entrance */}
       <HeroSection />
-      <Citation />
-      <Services />
-      <Skills />
+
+      {/* Act II — The Philosophy */}
+      <div className="container">
+        <Citation />
+      </div>
+
+      {/* Act III — The Craft */}
+      <div className="container">
+        <Services />
+      </div>
+
+      {/* Act IV — The Arsenal */}
+      <div className="container">
+        <Skills />
+      </div>
+
+      {/* Act V — The Showcase */}
+      <div className="container">
+        <Works />
+      </div>
+
+      {/* Act VI — Through My Lens */}
       <PhotographySection />
-      <Works />
     </main>
   );
 }

@@ -1,14 +1,14 @@
 "use client";
 
 import Image from "next/image";
-import { Oswald } from "next/font/google";
+import Link from "next/link";
 import { useState, useEffect, useCallback, useRef } from "react";
-import { X, ChevronLeft, ChevronRight, Expand } from "lucide-react";
-
-const oswald = Oswald({ subsets: ["latin"], weight: ["400", "500", "600"] });
+import { motion, AnimatePresence } from "framer-motion";
+import { X, ChevronLeft, ChevronRight } from "lucide-react";
+import { cormorant, spaceGrotesk } from "@/data/constants/fonts";
 
 // All unique portfolio images (optimized, duplicates removed)
-const allPhotos = [
+export const allPhotos = [
   "/portfolio-optimized/1.jpg",
   "/portfolio-optimized/2.jpg",
   "/portfolio-optimized/3.jpg",
@@ -101,7 +101,7 @@ const allPhotos = [
   "/portfolio-optimized/WhatsApp_Image_2026-02-25_at_1.58.08_PM_1.jpg",
 ];
 
-// Curated showcase images — 10 hand-picked favorites
+// Curated showcase — a pool of images for the mouse trail
 const showcasePhotos = [
   "/portfolio-optimized/1.jpg",
   "/portfolio-optimized/2.jpg",
@@ -113,61 +113,72 @@ const showcasePhotos = [
   "/portfolio-optimized/8.jpg",
   "/portfolio-optimized/9.jpg",
   "/portfolio-optimized/10.jpg",
+  "/portfolio-optimized/IMG_0186.jpg",
+  "/portfolio-optimized/IMG_0294.jpg",
 ];
 
-// Lazy image with smooth fade-in on load
-function LazyImage({
-  src,
-  alt,
-  priority = false,
-  className = "",
-  onClick,
-}: {
+interface TrailImage {
+  id: number;
+  x: number;
+  y: number;
   src: string;
-  alt: string;
-  priority?: boolean;
-  className?: string;
-  onClick?: () => void;
-}) {
-  const [loaded, setLoaded] = useState(false);
-
-  return (
-    <div
-      className={`relative overflow-hidden bg-zinc-800/40 group cursor-pointer ${className}`}
-      onClick={onClick}
-    >
-      {/* Shimmer placeholder */}
-      {!loaded && (
-        <div className="absolute inset-0 bg-gradient-to-r from-zinc-800/60 via-zinc-700/40 to-zinc-800/60 animate-pulse" />
-      )}
-      <Image
-        src={src}
-        alt={alt}
-        fill
-        sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-        quality={75}
-        priority={priority}
-        loading={priority ? "eager" : "lazy"}
-        className={`object-cover transition-all duration-700 ease-out group-hover:scale-105 ${loaded ? "opacity-100" : "opacity-0"
-          }`}
-        onLoad={() => setLoaded(true)}
-      />
-      {/* Hover overlay */}
-      <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-center pb-4">
-        <Expand className="w-5 h-5 text-white/80" />
-      </div>
-    </div>
-  );
+  rotation: number;
 }
 
 export default function PhotographySection() {
   const [showGallery, setShowGallery] = useState(false);
   const [fullscreenImage, setFullscreenImage] = useState<string | null>(null);
   const [fullscreenIndex, setFullscreenIndex] = useState(0);
-  const galleryRef = useRef<HTMLDivElement>(null);
-
-  // Which image set to use for fullscreen navigation
   const activeSet = showGallery ? allPhotos : showcasePhotos;
+
+  // Trail state
+  const [trail, setTrail] = useState<TrailImage[]>([]);
+  const [globalIndex, setGlobalIndex] = useState(0);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const lastMousePos = useRef({ x: 0, y: 0 });
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!containerRef.current) return;
+    const rect = containerRef.current.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+
+    const dx = x - lastMousePos.current.x;
+    const dy = y - lastMousePos.current.y;
+    const distance = Math.sqrt(dx * dx + dy * dy);
+
+    // Spawn a new image every 80px of movement
+    if (distance > 80) {
+      lastMousePos.current = { x, y };
+      
+      const newImage: TrailImage = {
+        id: Date.now() + Math.random(),
+        x,
+        y,
+        src: showcasePhotos[globalIndex % showcasePhotos.length],
+        rotation: Math.random() * 30 - 15, // Random rotation between -15deg and +15deg
+      };
+
+      setGlobalIndex((prev) => prev + 1);
+
+      setTrail((prev) => {
+        const next = [...prev, newImage];
+        // Keep only the last 8 images on screen for the trail effect
+        if (next.length > 8) return next.slice(1);
+        return next;
+      });
+
+      // Clear the trail if no movement after 1.5 seconds
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+      timeoutRef.current = setTimeout(() => setTrail([]), 1500);
+    }
+  };
+
+  const handleMouseLeave = () => {
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    setTrail([]);
+  };
 
   const openFullscreen = useCallback(
     (src: string) => {
@@ -202,7 +213,7 @@ export default function PhotographySection() {
     return () => window.removeEventListener("keydown", handleKey);
   }, [fullscreenImage, navigateFullscreen]);
 
-  // Prevent body scroll when gallery or fullscreen is open
+  // Prevent body scroll when fullscreen or gallery is open
   useEffect(() => {
     if (showGallery || fullscreenImage) {
       document.body.style.overflow = "hidden";
@@ -216,203 +227,128 @@ export default function PhotographySection() {
 
   return (
     <>
-      <section
-        id="photography"
-        className="w-screen relative left-1/2 right-1/2 ml-[-50vw] mr-[-50vw] py-20 bg-[#fff8f5] dark:bg-[#0f0f0f]"
-      >
-        {/* Title */}
-        <div className="text-center mb-14 px-4">
-          <h2
-            className={`${oswald.className} text-2xl md:text-4xl flex flex-col text-center gap-3`}
-          >
-            <span className="text-base font-light text-red-900 dark:text-red-400 tracking-widest uppercase">
-              Photography
+      <section id="photography" className="relative w-full bg-[#060606]">
+        {/* ── Interactive Cursor Trail Area ── */}
+        <div 
+          ref={containerRef}
+          onMouseMove={handleMouseMove}
+          onMouseLeave={handleMouseLeave}
+          className="relative w-full min-h-[85vh] flex flex-col items-center justify-center overflow-hidden cursor-crosshair group border-y border-white/[0.04]"
+        >
+          {/* Default Text behind the images */}
+          <div className="z-0 flex flex-col items-center justify-center text-center px-6 pointer-events-none transition-opacity duration-700 group-hover:opacity-20">
+            <span className={`${spaceGrotesk.className} text-[11px] tracking-[0.4em] uppercase text-[#c9a55a]/60 block mb-6`}>
+              Through My Lens
             </span>
-            <span className="font-semibold">
-              Capturing <span className="text-red-600">Moments & Stories</span>
-            </span>
-          </h2>
-          <p className="text-zinc-500 dark:text-zinc-400 text-sm mt-3 max-w-md mx-auto">
-            A curated selection from my photography journey — landscapes,
-            portraits, and everything in between.
-          </p>
+            <h2 className={`${cormorant.className} text-5xl md:text-7xl lg:text-8xl font-light text-white/90`}>
+              Follow the <span className="text-[#D4AF37]">Passion</span>
+            </h2>
+            <p className={`${spaceGrotesk.className} text-[#555] text-xs md:text-sm mt-8 uppercase tracking-[0.3em]`}>
+              Move your cursor across this space
+            </p>
+          </div>
+
+          {/* The trail images */}
+          <div className="absolute inset-0 pointer-events-none z-10 overflow-hidden">
+            <AnimatePresence>
+              {trail.map((item) => (
+                <motion.div
+                  key={item.id}
+                  initial={{ opacity: 0, scale: 0.2, rotate: item.rotation - 20 }}
+                  animate={{ opacity: 1, scale: 1, rotate: item.rotation }}
+                  exit={{ opacity: 0, scale: 0.7, transition: { duration: 0.5, ease: "easeOut" } }}
+                  transition={{ type: "spring", stiffness: 200, damping: 20 }}
+                  className="absolute origin-center"
+                  style={{
+                    left: item.x - 140, // offset by half of width (280/2)
+                    top: item.y - 180,  // offset by half of height (360/2)
+                  }}
+                >
+                  <div className="relative w-[280px] h-[360px] md:w-[320px] md:h-[420px] rounded-lg shadow-2xl overflow-hidden border border-white/[0.08] bg-[#060606]">
+                    <Image
+                      src={item.src}
+                      alt="Trail image"
+                      fill
+                      sizes="(max-width: 768px) 280px, 320px"
+                      quality={60} // Lower quality for trail performance
+                      className="object-cover"
+                      priority
+                    />
+                  </div>
+                </motion.div>
+              ))}
+            </AnimatePresence>
+          </div>
         </div>
 
-        {/* Showcase Grid — 10 images, responsive bento layout */}
-        <div className="px-4 sm:px-8 md:px-16 max-w-6xl mx-auto">
-          {/* Desktop: bento grid */}
-          <div className="hidden md:grid grid-cols-4 grid-rows-3 gap-3 h-[600px]">
-            {/* Row 1 — large hero + 2 smaller */}
-            <div className="col-span-2 row-span-2 rounded-2xl overflow-hidden">
-              <LazyImage
-                src={showcasePhotos[0]}
-                alt="Photography showcase"
-                priority
-                className="w-full h-full"
-                onClick={() => openFullscreen(showcasePhotos[0])}
-              />
-            </div>
-            <div className="rounded-2xl overflow-hidden">
-              <LazyImage
-                src={showcasePhotos[1]}
-                alt="Photography showcase"
-                priority
-                className="w-full h-full"
-                onClick={() => openFullscreen(showcasePhotos[1])}
-              />
-            </div>
-            <div className="rounded-2xl overflow-hidden">
-              <LazyImage
-                src={showcasePhotos[2]}
-                alt="Photography showcase"
-                priority
-                className="w-full h-full"
-                onClick={() => openFullscreen(showcasePhotos[2])}
-              />
-            </div>
-            {/* Row 2 — middle right */}
-            <div className="rounded-2xl overflow-hidden">
-              <LazyImage
-                src={showcasePhotos[3]}
-                alt="Photography showcase"
-                className="w-full h-full"
-                onClick={() => openFullscreen(showcasePhotos[3])}
-              />
-            </div>
-            <div className="rounded-2xl overflow-hidden">
-              <LazyImage
-                src={showcasePhotos[4]}
-                alt="Photography showcase"
-                className="w-full h-full"
-                onClick={() => openFullscreen(showcasePhotos[4])}
-              />
-            </div>
-            {/* Row 3 — bottom 4 */}
-            <div className="rounded-2xl overflow-hidden">
-              <LazyImage
-                src={showcasePhotos[5]}
-                alt="Photography showcase"
-                className="w-full h-full"
-                onClick={() => openFullscreen(showcasePhotos[5])}
-              />
-            </div>
-            <div className="rounded-2xl overflow-hidden">
-              <LazyImage
-                src={showcasePhotos[6]}
-                alt="Photography showcase"
-                className="w-full h-full"
-                onClick={() => openFullscreen(showcasePhotos[6])}
-              />
-            </div>
-            <div className="rounded-2xl overflow-hidden">
-              <LazyImage
-                src={showcasePhotos[7]}
-                alt="Photography showcase"
-                className="w-full h-full"
-                onClick={() => openFullscreen(showcasePhotos[7])}
-              />
-            </div>
-            <div className="rounded-2xl overflow-hidden">
-              <LazyImage
-                src={showcasePhotos[8]}
-                alt="Photography showcase"
-                className="w-full h-full"
-                onClick={() => openFullscreen(showcasePhotos[8])}
-              />
-            </div>
-          </div>
-
-          {/* Mobile: 2-column grid with breathing room */}
-          <div className="grid md:hidden grid-cols-2 gap-3">
-            {showcasePhotos.slice(0, 8).map((photo, i) => (
-              <div
-                key={photo}
-                className={`rounded-xl overflow-hidden ${i === 0 ? "col-span-2 aspect-[16/9]" : "aspect-square"
-                  }`}
-              >
-                <LazyImage
-                  src={photo}
-                  alt="Photography showcase"
-                  priority={i < 2}
-                  className="w-full h-full"
-                  onClick={() => openFullscreen(photo)}
-                />
-              </div>
-            ))}
-          </div>
-
-          {/* View Gallery button */}
-          <div className="flex justify-center mt-10">
-            <button
-              onClick={() => setShowGallery(true)}
-              className="group relative inline-flex items-center gap-3 px-8 py-3.5 bg-transparent border border-red-600/30 text-red-600 dark:text-red-400 rounded-full font-medium text-sm tracking-wide hover:bg-red-600 hover:text-white hover:border-red-600 transition-all duration-500 hover:shadow-[0_0_30px_rgba(220,38,38,0.2)]"
-            >
-              <span>View Full Gallery</span>
-              <span className="text-xs opacity-60">
-                {allPhotos.length} photos
-              </span>
-              <Expand className="w-4 h-4 opacity-60 group-hover:opacity-100 transition-opacity" />
-            </button>
-          </div>
-
-          {/* Photo count */}
-          <p className="text-center text-zinc-500 dark:text-zinc-600 text-xs mt-4">
-            Showing {showcasePhotos.length} of {allPhotos.length} photos
-          </p>
+        {/* View full gallery link (moved outside the trail box) */}
+        <div className="w-full flex justify-center py-16 bg-[#060606] relative z-20">
+          <Link 
+            href="/gallery"
+            className="font-sans text-[10px] md:text-[11px] uppercase font-semibold tracking-[0.2em] text-white hover:text-[#D4AF37] transition-colors duration-300"
+          >
+            See Full Gallery
+          </Link>
         </div>
       </section>
 
       {/* ══════════ Full Gallery Modal ══════════ */}
       {showGallery && (
-        <div className="fixed inset-0 z-40 bg-black/95 backdrop-blur-sm overflow-y-auto">
+        <div className="fixed inset-0 z-40 bg-[#060606]/98 backdrop-blur-sm overflow-y-auto">
           {/* Header */}
-          <div className="sticky top-0 z-10 bg-black/80 backdrop-blur-md border-b border-white/5">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
+          <div className="sticky top-0 z-10 bg-[#060606]/90 backdrop-blur-md border-b border-white/[0.04]">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 py-5 flex items-center justify-between">
               <div>
-                <h3
-                  className={`${oswald.className} text-white text-lg md:text-xl font-semibold`}
-                >
+                <h3 className={`${cormorant.className} text-white/90 text-xl font-light`}>
                   Full Gallery
                 </h3>
-                <p className="text-zinc-500 text-xs mt-0.5">
-                  {allPhotos.length} photos
+                <p className={`${spaceGrotesk.className} text-[#444] text-[10px] tracking-[0.15em] mt-1`}>
+                  {allPhotos.length} photographs
                 </p>
               </div>
               <button
                 onClick={() => setShowGallery(false)}
-                className="w-10 h-10 rounded-full bg-white/10 hover:bg-red-600 flex items-center justify-center text-white transition-all duration-300"
+                className="w-10 h-10 rounded-full border border-white/[0.06] hover:border-[#c9a55a]/30 
+                  flex items-center justify-center text-white/30 hover:text-[#c9a55a] 
+                  transition-all duration-300 cursor-pointer"
               >
-                <X className="w-5 h-5" />
+                <X className="w-4 h-4" />
               </button>
             </div>
           </div>
 
-          {/* Gallery Grid */}
-          <div
-            ref={galleryRef}
-            className="max-w-7xl mx-auto px-4 sm:px-6 py-8"
-          >
+          {/* Masonry Gallery */}
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
             <div className="columns-2 sm:columns-3 lg:columns-4 gap-3 space-y-3">
               {allPhotos.map((photo, i) => (
                 <div
                   key={photo}
-                  className="break-inside-avoid rounded-xl overflow-hidden"
-                  style={{
-                    animationDelay: `${Math.min(i * 30, 600)}ms`,
-                  }}
+                  className="break-inside-avoid rounded-lg overflow-hidden cursor-pointer group"
+                  onClick={() => openFullscreen(photo)}
                 >
-                  <div className="relative aspect-[3/4] sm:aspect-auto sm:h-auto">
-                    <LazyImage
+                  <div
+                    className={`relative ${
+                      i % 5 === 0
+                        ? "aspect-[3/4]"
+                        : i % 5 === 1
+                          ? "aspect-square"
+                          : i % 5 === 2
+                            ? "aspect-[4/5]"
+                            : i % 5 === 3
+                              ? "aspect-[3/2]"
+                              : "aspect-[4/3]"
+                    }`}
+                  >
+                    <Image
                       src={photo}
                       alt={`Gallery photo ${i + 1}`}
-                      className={`w-full ${i % 3 === 0
-                        ? "aspect-[3/4]"
-                        : i % 3 === 1
-                          ? "aspect-square"
-                          : "aspect-[4/3]"
-                        }`}
-                      onClick={() => openFullscreen(photo)}
+                      fill
+                      sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                      quality={75}
+                      loading="lazy"
+                      className="object-cover transition-all duration-500 group-hover:scale-105"
                     />
+                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-300" />
                   </div>
                 </div>
               ))}
@@ -424,20 +360,26 @@ export default function PhotographySection() {
       {/* ══════════ Fullscreen Image Viewer ══════════ */}
       {fullscreenImage && (
         <div
-          className="fixed inset-0 z-50 bg-black/95 backdrop-blur-sm flex items-center justify-center"
+          className="fixed inset-0 z-50 bg-black/95 backdrop-blur-md flex items-center justify-center"
           onClick={() => setFullscreenImage(null)}
         >
           {/* Close */}
           <button
-            className="absolute top-4 right-4 sm:top-6 sm:right-6 w-11 h-11 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center text-white hover:bg-red-600 transition-all duration-300 z-10"
+            className="absolute top-4 right-4 sm:top-6 sm:right-6 w-11 h-11 rounded-full 
+              border border-white/[0.08] backdrop-blur-sm flex items-center justify-center 
+              text-white/40 hover:text-[#c9a55a] hover:border-[#c9a55a]/30 
+              transition-all duration-300 z-10 cursor-pointer"
             onClick={() => setFullscreenImage(null)}
           >
-            <X className="w-5 h-5" />
+            <X className="w-4 h-4" />
           </button>
 
           {/* Prev */}
           <button
-            className="absolute left-2 sm:left-6 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center text-white hover:bg-red-600 transition-all duration-300 z-10"
+            className="absolute left-2 sm:left-6 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full 
+              border border-white/[0.08] backdrop-blur-sm flex items-center justify-center 
+              text-white/40 hover:text-[#c9a55a] hover:border-[#c9a55a]/30 
+              transition-all duration-300 z-10 cursor-pointer"
             onClick={(e) => {
               e.stopPropagation();
               navigateFullscreen("prev");
@@ -448,7 +390,10 @@ export default function PhotographySection() {
 
           {/* Next */}
           <button
-            className="absolute right-2 sm:right-6 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center text-white hover:bg-red-600 transition-all duration-300 z-10"
+            className="absolute right-2 sm:right-6 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full 
+              border border-white/[0.08] backdrop-blur-sm flex items-center justify-center 
+              text-white/40 hover:text-[#c9a55a] hover:border-[#c9a55a]/30 
+              transition-all duration-300 z-10 cursor-pointer"
             onClick={(e) => {
               e.stopPropagation();
               navigateFullscreen("next");
@@ -474,9 +419,9 @@ export default function PhotographySection() {
           </div>
 
           {/* Counter */}
-          <p className="absolute bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 text-white/50 text-sm font-light">
+          <p className={`${spaceGrotesk.className} absolute bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 text-white/30 text-[11px] tracking-[0.2em]`}>
             {fullscreenIndex + 1}
-            <span className="mx-1 text-white/30">/</span>
+            <span className="mx-2 text-white/15">/</span>
             {activeSet.length}
           </p>
         </div>

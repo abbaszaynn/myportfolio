@@ -1,64 +1,94 @@
 "use client";
-import { useState } from "react";
-import { oswald } from "@/data/constants/fonts";
+
+import { useState, useRef } from "react";
+import { motion, useInView } from "framer-motion";
+import { cormorant, spaceGrotesk } from "@/data/constants/fonts";
 import { socialMedia } from "@/data/index";
-import { FaLocationArrow } from "react-icons/fa6";
 import ContactModal from "./contact-modal";
 
 export default function Footer() {
   const [isContactOpen, setIsContactOpen] = useState(false);
+  const ref = useRef<HTMLElement>(null);
+  const isInView = useInView(ref, { once: true, margin: "-80px" });
 
   return (
     <>
-      <footer className="container">
-        <div className="w-full pb-10" id="contact">
-          <div className="flex flex-col items-center">
-            <h1
-              className={`${oswald.className} font-bold lg:max-w-[45vw] text-2xl text-center`}
+      <footer ref={ref} className="relative" id="contact">
+        {/* Divider */}
+        <div className="section-divider" />
+
+        {/* Main CTA area */}
+        <div className="py-28 md:py-40 flex flex-col items-center text-center px-6">
+          <motion.span
+            className={`${spaceGrotesk.className} text-[11px] tracking-[0.4em] uppercase text-[#c9a55a]/60 block mb-6`}
+            initial={{ opacity: 0, y: 20 }}
+            animate={isInView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.8 }}
+          >
+            Get In Touch
+          </motion.span>
+
+          <motion.h2
+            className={`${cormorant.className} text-4xl md:text-6xl lg:text-7xl font-light text-white/90 max-w-3xl leading-tight`}
+            initial={{ opacity: 0, y: 30 }}
+            animate={isInView ? { opacity: 1, y: 0 } : {}}
+            transition={{ delay: 0.2, duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+          >
+            Let&apos;s create something{" "}
+            <span className="text-gradient-gold italic">extraordinary</span>{" "}
+            together.
+          </motion.h2>
+
+          <motion.button
+            onClick={() => setIsContactOpen(true)}
+            className="mt-12 group relative overflow-hidden uppercase text-[11px] tracking-[0.25em] font-medium
+              border border-[#c9a55a]/30 rounded-full px-12 py-5
+              text-[#c9a55a] bg-transparent
+              transition-all duration-500 ease-out
+              hover:border-[#c9a55a]/70 hover:bg-[#c9a55a]/5
+              hover:shadow-[0_0_60px_rgba(201,165,90,0.12)]
+              active:scale-95 cursor-pointer"
+            initial={{ opacity: 0, y: 20 }}
+            animate={isInView ? { opacity: 1, y: 0 } : {}}
+            transition={{ delay: 0.4, duration: 0.8 }}
+          >
+            Start a Conversation
+          </motion.button>
+        </div>
+
+        {/* Bottom bar */}
+        <div className="border-t border-white/[0.06]">
+          <div className="container py-8 flex flex-col md:flex-row justify-between items-center gap-6">
+            <motion.p
+              className={`${spaceGrotesk.className} text-[11px] tracking-[0.15em] text-[#444]`}
+              initial={{ opacity: 0 }}
+              animate={isInView ? { opacity: 1 } : {}}
+              transition={{ delay: 0.6, duration: 0.8 }}
             >
-              Ready to take{" "}
-              <span className="text-red-800 dark:text-red-600">your</span>{" "}
-              digital presence to the next level?
-            </h1>
-            <p className="text-white-200 md:mt-10 my-5 text-center">
-              Reach out to me today and let&apos;s discuss how I can help you
-              achieve your goals.
-            </p>
-            <button
-              onClick={() => setIsContactOpen(true)}
-              className="uppercase font-semibold text-xs bg-cool-black dark:bg-white dark:text-black text-white 
-               border-2 border-red-500 rounded-full px-8 py-4 flex items-center justify-center 
-               transition-all duration-300 ease-in-out 
-               hover:scale-110 hover:bg-red-600 hover:text-white hover:border-white 
-               active:scale-95 shadow-[0_0_10px_rgba(255,0,0,0.3)] hover:shadow-[0_0_25px_rgba(255,0,0,0.7)]"
+              &copy; {new Date().getFullYear()} Zayn Abbas. All rights reserved.
+            </motion.p>
+
+            <motion.div
+              className="flex items-center gap-4"
+              initial={{ opacity: 0 }}
+              animate={isInView ? { opacity: 1 } : {}}
+              transition={{ delay: 0.8, duration: 0.8 }}
             >
-              <span>Let&apos;s get in touch</span>
-              <FaLocationArrow className="ml-2" />
-            </button>
-          </div>
-          <div className="flex mt-16 md:flex-row flex-col justify-between items-center">
-            <p className="md:text-base text-sm md:font-normal font-light">
-              Copyright © {new Date().getFullYear()} Zayn Abbas. All rights reserved.
-            </p>
-            <div className="flex items-center md:gap-3 gap-6 mt-4 md:md-0">
-              {socialMedia.map((info, index) => (
+              {socialMedia.map((info) => (
                 <a
                   key={info.id}
                   href={info.href}
                   target="_blank"
-                  className="w-10 h-10 cursor-pointer flex justify-center items-center backdrop-filter backdrop-blur-lg saturate-180 bg-opacity-75 bg-black-200 rounded-lg border border-black dark:border-[rgb(150,150,150)] bg-red-50 hover:bg-red-100 text-black dark:text-red-500 transition-all duration-300 dark:bg-inherit"
+                  rel="noopener noreferrer"
+                  className="w-10 h-10 rounded-full border border-white/[0.08] flex items-center justify-center
+                    text-[#555] hover:text-[#c9a55a] hover:border-[#c9a55a]/30
+                    transition-all duration-300 cursor-pointer
+                    hover:shadow-[0_0_20px_rgba(201,165,90,0.08)]"
                 >
-                  <span
-                    className={`${index === Math.floor(socialMedia.length / 2)
-                        ? "text-[#f1b773cb]" // beige for middle one
-                        : "text-red-700" // red for others
-                      }`}
-                  >
-                    {info.img}
-                  </span>
+                  <span className="text-sm">{info.img}</span>
                 </a>
               ))}
-            </div>
+            </motion.div>
           </div>
         </div>
       </footer>
@@ -67,4 +97,3 @@ export default function Footer() {
     </>
   );
 }
-

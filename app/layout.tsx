@@ -1,15 +1,17 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
-import { inter } from "@/data/constants/fonts";
-import { ToggleButton } from "@/components/toggle-theme";
+import { spaceGrotesk } from "@/data/constants/fonts";
 import Footer from "@/components/footer";
+import SmoothScroll from "@/components/smooth-scroll";
 import { Analytics } from "@vercel/analytics/react";
 
 export const metadata: Metadata = {
-  title: "Zayn's Portfolio",
+  title: "ZIRCON — Zayn Abbas | AI Engineer & Full-Stack Developer",
   description:
-    "An elegant and visually appealing portfolio showcasing the work and career of Zayn abbas.",
+    "Award-winning portfolio of Zayn Abbas — an AI Engineer & Full-Stack Developer crafting intelligent digital experiences that bridge creativity and technology.",
+  keywords: ["AI Engineer", "Full-Stack Developer", "Portfolio", "Zayn Abbas", "ZIRCON"],
+  authors: [{ name: "Zayn Abbas" }],
 };
 
 export default function RootLayout({
@@ -18,19 +20,20 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="scroll-smooth overflow-x-hidden">
+    <html lang="en">
       <body
-        className={`${inter.className} antialiased overflow-x-hidden bg-[#f8f8f8] dark:bg-cool-black relative`}
+        className={`${spaceGrotesk.className} antialiased bg-[#0a0a0a] text-white relative noise-overlay`}
       >
         <ThemeProvider
           attribute="class"
           defaultTheme="dark"
-          enableSystem
+          enableSystem={false}
           disableTransitionOnChange
         >
-          <ToggleButton />
-          {children}
-          <Footer />
+          <SmoothScroll>
+            {children}
+            <Footer />
+          </SmoothScroll>
         </ThemeProvider>
       </body>
       <Analytics />

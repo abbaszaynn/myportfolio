@@ -1,376 +1,217 @@
 "use client";
 
-import {
-  useState,
-  useEffect,
-  useRef,
-  useMemo,
-  Suspense,
-} from "react";
-import { Canvas, useFrame, useThree, extend } from "@react-three/fiber";
-import { Effects } from "@react-three/drei";
-import { UnrealBloomPass } from "three-stdlib";
-import { useTheme } from "next-themes";
-
-extend({ UnrealBloomPass });
-import { motion } from "framer-motion";
-import * as THREE from "three";
-import { ubuntu, playfair } from "@/data/constants/fonts";
-import { FlipWords } from "./ui/flip-words";
-import ContactModal from "./contact-modal";
-import gsap from "gsap";
+import { useState, useEffect, useRef } from "react";
+import { motion, useAnimationFrame, useMotionValue } from "framer-motion";
+import Image from "next/image";
+import Link from "next/link";
+import { cormorant, spaceGrotesk } from "@/data/constants/fonts";
 
 /* ═══════════════════════════════════════════════════════════════
-   SECTION 1 — NEON TECH LOGO (3D Glowing Wireframe)
-   ─────────────────────────────────────────────────────────────
-   A high-tech, dev-focused geometric logo that glows and rotates.
+   DATA & CONFIG
+   Smaller uniform sizes, tight rigid elliptical formation
 ═══════════════════════════════════════════════════════════════ */
 
-function NeonTechLogo({ isDark }: { isDark: boolean }) {
-  const groupRef = useRef<THREE.Group>(null);
-  const materialRef = useRef<THREE.MeshStandardMaterial>(null);
+const PLANET_W = 150;
+const PLANET_H = 100;
+const RX = 320; // Elliptical radius X (tighter)
+const RY = 200; // Elliptical radius Y (tighter)
 
-  // A highly mathematical, dev-looking shape (finer lines)
-  const geometry = useMemo(() => new THREE.TorusKnotGeometry(2.2, 0.12, 200, 32), []);
-  const innerGeometry = useMemo(() => new THREE.TorusKnotGeometry(2.18, 0.11, 200, 32), []);
+const planets = [
+  { id: 1, src: "/portfolio-optimized/1.jpg", radiusX: RX, radiusY: RY, angle: 0, width: PLANET_W, height: PLANET_H, zIndex: 1 },
+  { id: 2, src: "/portfolio-optimized/2.jpg", radiusX: RX, radiusY: RY, angle: 22.5, width: PLANET_W, height: PLANET_H, zIndex: 1 },
+  { id: 3, src: "/portfolio-optimized/3.jpg", radiusX: RX, radiusY: RY, angle: 45, width: PLANET_W, height: PLANET_H, zIndex: 1 },
+  { id: 4, src: "/portfolio-optimized/4.jpg", radiusX: RX, radiusY: RY, angle: 67.5, width: PLANET_W, height: PLANET_H, zIndex: 1 },
+  { id: 5, src: "/portfolio-optimized/5.jpg", radiusX: RX, radiusY: RY, angle: 90, width: PLANET_W, height: PLANET_H, zIndex: 1 },
+  { id: 6, src: "/portfolio-optimized/6.jpg", radiusX: RX, radiusY: RY, angle: 112.5, width: PLANET_W, height: PLANET_H, zIndex: 1 },
+  { id: 7, src: "/portfolio-optimized/7.jpg", radiusX: RX, radiusY: RY, angle: 135, width: PLANET_W, height: PLANET_H, zIndex: 1 },
+  { id: 8, src: "/portfolio-optimized/8.jpg", radiusX: RX, radiusY: RY, angle: 157.5, width: PLANET_W, height: PLANET_H, zIndex: 1 },
+  { id: 9, src: "/portfolio-optimized/9.jpg", radiusX: RX, radiusY: RY, angle: 180, width: PLANET_W, height: PLANET_H, zIndex: 1 },
+  { id: 10, src: "/portfolio-optimized/10.jpg", radiusX: RX, radiusY: RY, angle: 202.5, width: PLANET_W, height: PLANET_H, zIndex: 1 },
+  { id: 11, src: "/portfolio-optimized/IMG_0186.jpg", radiusX: RX, radiusY: RY, angle: 225, width: PLANET_W, height: PLANET_H, zIndex: 1 },
+  { id: 12, src: "/portfolio-optimized/IMG_0294.jpg", radiusX: RX, radiusY: RY, angle: 247.5, width: PLANET_W, height: PLANET_H, zIndex: 1 },
+  { id: 13, src: "/portfolio-optimized/photo1.jpg", radiusX: RX, radiusY: RY, angle: 270, width: PLANET_W, height: PLANET_H, zIndex: 1 },
+  { id: 14, src: "/portfolio-optimized/photo2.jpg", radiusX: RX, radiusY: RY, angle: 292.5, width: PLANET_W, height: PLANET_H, zIndex: 1 },
+  { id: 15, src: "/portfolio-optimized/photo3.jpg", radiusX: RX, radiusY: RY, angle: 315, width: PLANET_W, height: PLANET_H, zIndex: 1 },
+  { id: 16, src: "/portfolio-optimized/DSC_0177.jpg", radiusX: RX, radiusY: RY, angle: 337.5, width: PLANET_W, height: PLANET_H, zIndex: 1 },
+];
 
-  useFrame((state, delta) => {
-    if (groupRef.current) {
-      // Smooth continuous tech rotation
-      groupRef.current.rotation.y += delta * 0.15;
-      groupRef.current.rotation.x += delta * 0.1;
-      
-      // Gentle floating
-      groupRef.current.position.y = Math.sin(state.clock.elapsedTime * 0.8) * 0.15;
-      
-      // Cursor interaction: slightly tilt towards mouse
-      groupRef.current.rotation.z = THREE.MathUtils.lerp(
-        groupRef.current.rotation.z,
-        (state.pointer.x * Math.PI) / 8,
-        0.05
-      );
+/* ═══════════════════════════════════════════════════════════════
+   ORBITING IMAGE COMPONENT
+═══════════════════════════════════════════════════════════════ */
+
+function OrbitingImage({
+  planet,
+  hoveredId,
+  setHoveredId
+}: {
+  planet: typeof planets[0];
+  hoveredId: number | null;
+  setHoveredId: (id: number | null) => void;
+}) {
+  const isHovered = hoveredId === planet.id;
+  const isAnyHovered = hoveredId !== null;
+
+  const x = useMotionValue(0);
+  const y = useMotionValue(0);
+  const scaleDepth = useMotionValue(1);
+  const zIndexDepth = useMotionValue(planet.zIndex);
+
+  const accumulatedTime = useRef(0);
+  const lastTime = useRef<number | null>(null);
+
+  useAnimationFrame((time) => {
+    if (lastTime.current === null) {
+      lastTime.current = time;
     }
+    const deltaTime = time - lastTime.current;
+    lastTime.current = time;
 
-    // Dynamic color transition based on theme
-    if (materialRef.current) {
-      // Use subtle slate/gray for dark mode (standard look), and medium slate for light mode
-      const targetEmissive = isDark ? new THREE.Color("#475569") : new THREE.Color("#94a3b8"); 
-      const targetColor = isDark ? new THREE.Color("#334155") : new THREE.Color("#cbd5e1"); 
-      
-      materialRef.current.emissive.lerp(targetEmissive, 0.05);
-      materialRef.current.color.lerp(targetColor, 0.05);
-    }
+    // The movement of layout should continue in its particular direction even when hovered
+    accumulatedTime.current += deltaTime;
+
+    const t = accumulatedTime.current;
+    
+    // Slow, elegant 3D orbit
+    const currentAngle = (planet.angle * Math.PI) / 180 + t * 0.00004; 
+    
+    // Calculate 2D position (Rigid layout - no organic bobbing to maintain ladder formation)
+    const posX = Math.cos(currentAngle) * planet.radiusX;
+    const posY = Math.sin(currentAngle) * planet.radiusY;
+    
+    x.set(posX);
+    y.set(posY);
+    
+    // 3D Depth illusion: Scale down when moving "back", scale up when "front"
+    const depth = Math.sin(currentAngle); // -1 (top/back) to 1 (bottom/front)
+    scaleDepth.set(1 + depth * 0.15); // Scale varies from 0.85 to 1.15
+    zIndexDepth.set(Math.round(20 + depth * 10)); // Z-index varies to create realistic overlapping
   });
 
+  const currentOpacity = isHovered ? 1 : (isAnyHovered ? 0.05 : 0.4);
+  const currentFilter = isHovered ? "grayscale(0%) brightness(1)" : "grayscale(100%) brightness(0.6)";
+
   return (
-    <group ref={groupRef} position={[2.8, -0.5, -3.5]}>
-      {/* Outer Wireframe (Glowing) */}
-      <mesh geometry={geometry}>
-        <meshStandardMaterial
-          ref={materialRef}
-          wireframe={true}
-          emissiveIntensity={isDark ? 0.5 : 0.2}
-          toneMapped={false}
-          transparent
-          opacity={isDark ? 0.4 : 0.5}
+    <motion.div
+      style={{ x, y, scale: scaleDepth, zIndex: zIndexDepth }}
+      className="absolute top-0 left-0"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 1, delay: planet.id * 0.1 }}
+      onMouseEnter={() => setHoveredId(planet.id)}
+      onMouseLeave={() => setHoveredId(null)}
+    >
+      <motion.div
+        className="relative overflow-hidden cursor-crosshair -translate-x-1/2 -translate-y-1/2 shadow-2xl group"
+        style={{ width: planet.width, height: planet.height }}
+        animate={{ 
+          scale: isHovered ? 1.15 : 1, // Increase size of the hovered image wrapper
+          opacity: currentOpacity,
+          filter: currentFilter,
+          zIndex: isHovered ? 100 : "auto"
+        }}
+        transition={{ duration: 0.6, ease: "easeOut" }}
+      >
+        <Image
+          src={planet.src}
+          alt={`Gallery image ${planet.id}`}
+          fill
+          sizes={`${planet.width}px`}
+          quality={85}
+          priority
+          className="object-cover transition-transform duration-700 ease-out"
+          style={{ transform: isHovered ? "scale(1.15)" : "scale(1)" }}
         />
-      </mesh>
-
-      {/* Inner Solid core to block background lines for a cleaner 3D look */}
-      <mesh geometry={innerGeometry}>
-        <meshBasicMaterial color={isDark ? "#0f0f0f" : "#ffffff"} />
-      </mesh>
-    </group>
+      </motion.div>
+    </motion.div>
   );
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   SECTION 2 — SCENE ROOT
+   STATIC CENTER LOGO
 ═══════════════════════════════════════════════════════════════ */
 
-function SceneRoot({ isDark }: { isDark: boolean }) {
-  const { scene } = useThree();
-  useEffect(() => {
-    scene.background = new THREE.Color(isDark ? "#0f0f0f" : "#ffffff");
-  }, [isDark, scene]);
-  return null;
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   SECTION 3 — R3F CANVAS WRAPPER
-═══════════════════════════════════════════════════════════════ */
-
-function HeroCanvas({ isDark }: { isDark: boolean }) {
+function StaticCenter() {
   return (
-    <Canvas
-      camera={{ position: [0, 0, 7.5], fov: 45 }}
-      dpr={[1, 1.5]}
-      style={{
-        position: "absolute",
-        inset: 0,
-        zIndex: 0,
-        pointerEvents: "none",
-      }}
-    >
-      <SceneRoot isDark={isDark} />
-      <Suspense fallback={null}>
-        <NeonTechLogo isDark={isDark} />
-        {/* Safe, stable Bloom via three-stdlib and drei Effects */}
-        <Effects disableGamma>
-          {/* @ts-ignore */}
-          <unrealBloomPass threshold={0.2} strength={isDark ? 0.3 : 0} radius={0.5} />
-        </Effects>
-      </Suspense>
-    </Canvas>
-  );
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   SECTION 4 — GSAP TYPEWRITER for "ZIRCON"
-═══════════════════════════════════════════════════════════════ */
-
-function ZirconHeadline({ isDark }: { isDark: boolean }) {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const chars = "ZIRCON".split("");
-
-  useEffect(() => {
-    if (!containerRef.current) return;
-    const els = containerRef.current.querySelectorAll<HTMLSpanElement>(".char");
-    gsap.set(els, { opacity: 0, y: 32, rotateX: -45 });
-    gsap.to(els, {
-      opacity: 1,
-      y: 0,
-      rotateX: 0,
-      duration: 0.6,
-      ease: "power4.out",
-      stagger: 0.075,
-      delay: 0.25,
-    });
-  }, []);
-
-  return (
-    <div
-      ref={containerRef}
-      className={`${playfair.className} inline-flex tracking-[0.06em] select-none`}
-      style={{ perspective: "600px" }}
-      aria-label="ZIRCON"
-    >
-      {chars.map((ch, i) => (
-        <span
-          key={i}
-          className="char inline-block bg-clip-text text-transparent"
-          style={{
-            opacity: 0,
-            backgroundImage: isDark
-              ? "linear-gradient(175deg, #f5f0e6 0%, #c9a55a 50%, #7a5c2e 100%)"
-              : "linear-gradient(175deg, #c9a55a 0%, #9c7b38 50%, #4a371c 100%)",
-            WebkitBackgroundClip: "text",
-            WebkitTextFillColor: "transparent",
-            backgroundClip: "text",
-          }}
-        >
-          {ch}
-        </span>
-      ))}
+    <div className="flex flex-col items-center justify-center pointer-events-auto cursor-default">
+      <h1 className="font-sans text-xl md:text-3xl font-light tracking-[0.6em] text-[#D4AF37] select-none whitespace-nowrap">
+        ZIRCON
+      </h1>
     </div>
   );
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   SECTION 5 — FRAMER MOTION VARIANTS
-═══════════════════════════════════════════════════════════════ */
-
-const slideUp = {
-  hidden:  { opacity: 0, y: 18 },
-  visible: (d: number) => ({
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1], delay: d },
-  }),
-};
-
-/* ═══════════════════════════════════════════════════════════════
-   SECTION 6 — HERO SECTION (main export)
+   HERO SECTION (Main Export)
 ═══════════════════════════════════════════════════════════════ */
 
 export default function HeroSection() {
-  const [isContactOpen, setIsContactOpen] = useState(false);
-  const { resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
+  const [hoveredId, setHoveredId] = useState<number | null>(null);
 
-  useEffect(() => { setMounted(true); }, []);
-
-  /* Avoid hydration flash — default to dark before mount */
-  const isDark = mounted ? resolvedTheme === "dark" : true;
-
-  /* Text colors fully bound to theme */
-  const textColor     = isDark ? "#ffffff" : "#000000";
-  const subTextColor  = isDark ? "rgba(255,255,255,0.55)" : "rgba(0,0,0,0.55)";
-  const bgColor       = isDark ? "#0f0f0f" : "#ffffff";
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   return (
-    <>
-      <section
-        className="w-screen relative left-[50%] right-[50%] ml-[-50vw] mr-[-50vw] flex flex-col items-center pt-32 pb-20 min-h-screen overflow-hidden"
-        style={{ backgroundColor: bgColor, transition: "background-color 0.4s ease" }}
-      >
-        {/* ── R3F Canvas with Neon Tech Logo — z-0 ── */}
-        {mounted && <HeroCanvas isDark={isDark} />}
+    <section className="relative w-full h-[100vh] min-h-[800px] flex items-center justify-center overflow-hidden bg-[#0a0a0a]">
+      {/* Left Vertical Branding & Nav - Spaced evenly across full height */}
+      <div className="absolute py-8 md:py-12 left-8 md:left-12 top-0 bottom-0 z-50 flex flex-col justify-between items-start pointer-events-auto">
+        <Link href="/">
+          {/* Using clean sans-serif and lowercase */}
+          <h2 className="font-sans text-sm md:text-base font-semibold tracking-widest text-white lowercase">
+            abbas zayn
+          </h2>
+        </Link>
+        <Link href="#works" className="font-sans pl-1 text-[9px] md:text-[10px] uppercase font-semibold tracking-[0.2em] text-white/70 hover:text-white transition-colors duration-300">
+          Works
+        </Link>
+        <Link href="#consultation" className="font-sans pl-1 text-[9px] md:text-[10px] uppercase font-semibold tracking-[0.2em] text-white/70 hover:text-white transition-colors duration-300">
+          Consultation
+        </Link>
+        <Link href="#about" className="font-sans pl-1 text-[9px] md:text-[10px] uppercase font-semibold tracking-[0.2em] text-white/70 hover:text-white transition-colors duration-300">
+          About
+        </Link>
+      </div>
 
-        {/* ── UI TEXT OVERLAY — z-10 ── */}
-        <div className="relative z-10 flex flex-col items-center text-center px-6 w-full max-w-4xl mx-auto mt-16">
+      {/* Right Top - Connect */}
+      <div className="absolute top-8 right-8 md:top-12 md:right-12 z-50 pointer-events-auto">
+        <Link href="#connect" className="font-sans text-[9px] md:text-[10px] uppercase font-semibold tracking-[0.2em] text-white/70 hover:text-white transition-colors duration-300">
+          Connect
+        </Link>
+      </div>
 
-          {/* Decorative arc */}
-          <motion.div
-            initial={{ scaleX: 0, opacity: 0 }}
-            animate={{ scaleX: 1, opacity: 0.55 }}
-            transition={{ delay: 0.15, duration: 1, ease: "easeOut" }}
-            className="mb-5"
-          >
-            <svg width="72" height="13" viewBox="0 0 72 13" fill="none">
-              <path d="M4 11 Q36 -3 68 11" stroke="#c9a55a" strokeWidth="1.4" fill="none" strokeLinecap="round" />
-            </svg>
-          </motion.div>
+      {/* Background overlay that dims everything down when hovered */}
+      <motion.div
+        className="absolute inset-0 z-0 pointer-events-none"
+        animate={{
+          background: hoveredId
+            ? "radial-gradient(circle 800px at 50% 50%, rgba(10,10,10,0.9), rgba(10,10,10,1))"
+            : "radial-gradient(circle 800px at 50% 50%, rgba(10,10,10,0), rgba(10,10,10,0))"
+        }}
+        transition={{ duration: 0.6 }}
+      />
 
-          {/* ── ZIRCON — GSAP per-character reveal ── */}
-          <h1 className="text-[5rem] sm:text-[7rem] md:text-[9.5rem] font-normal leading-none">
-            <ZirconHeadline isDark={isDark} />
-          </h1>
-
-          {/* Arc below */}
-          <motion.div
-            initial={{ scaleX: 0, opacity: 0 }}
-            animate={{ scaleX: 1, opacity: 0.4 }}
-            transition={{ delay: 0.85, duration: 1, ease: "easeOut" }}
-            className="mt-3"
-          >
-            <svg width="50" height="11" viewBox="0 0 50 11" fill="none">
-              <path d="M4 2 Q25 12 46 2" stroke="#c9a55a" strokeWidth="1.4" fill="none" strokeLinecap="round" />
-            </svg>
-          </motion.div>
-
-          {/* ── Sub-headline ── */}
-          <motion.p
-            className={`${ubuntu.className} mt-6 text-sm md:text-[0.8rem] tracking-[0.25em] uppercase font-light`}
-            style={{ color: subTextColor, transition: "color 0.4s ease" }}
-            variants={slideUp}
-            initial="hidden"
-            animate="visible"
-            custom={1.0}
-          >
-            Engineering intelligent software &amp; AI automation
-          </motion.p>
-
-          {/* ── Gold CTA (primary, beneath ZIRCON) ── */}
-          <motion.button
-            variants={slideUp}
-            initial="hidden"
-            animate="visible"
-            custom={1.3}
-            onClick={() => setIsContactOpen(true)}
-            className="mt-9 uppercase font-semibold text-xs tracking-[0.18em]
-              border-2 border-[#c9a55a] rounded-full px-9 py-[14px]
-              bg-transparent backdrop-blur-sm
-              transition-all duration-300 ease-in-out
-              hover:bg-[#c9a55a]/12 hover:border-[#f5e6a8] hover:scale-105
-              active:scale-95
-              shadow-[0_0_20px_rgba(201,165,90,0.18)]
-              hover:shadow-[0_0_36px_rgba(201,165,90,0.42)]"
-            style={{ color: textColor, transition: "color 0.4s ease" }}
-          >
-            Let&apos;s Connect 🚀
-          </motion.button>
-
-          {/* ── Divider ── */}
-          <motion.div
-            className="w-px h-14 bg-gradient-to-b from-[#c9a55a]/35 to-transparent mt-14"
-            initial={{ scaleY: 0, opacity: 0 }}
-            animate={{ scaleY: 1, opacity: 1 }}
-            transition={{ delay: 1.7, duration: 0.9, ease: "easeOut" }}
-          />
-
-          {/* ── FlipWords heading ── */}
-          <motion.div
-            variants={slideUp}
-            initial="hidden"
-            animate="visible"
-            custom={1.85}
-            className="mt-8 flex flex-col items-center gap-2 w-full"
-          >
-            <h2
-              className={`${ubuntu.className} font-bold text-3xl md:text-5xl leading-tight`}
-              style={{ color: textColor, transition: "color 0.4s ease" }}
-            >
-              From Ideas to{" "}
-              <span className="text-red-600">Logics</span>,
-            </h2>
-
-            <p
-              className={`${ubuntu.className} text-base md:text-lg font-medium mt-1`}
-              style={{ color: isDark ? "rgb(206,206,206)" : "rgb(60,60,60)", transition: "color 0.4s ease" }}
-            >
-              I Develop
-            </p>
-
-            <div className="mt-2">
-              <FlipWords
-                words={[
-                  "Intelligent Systems",
-                  "Scalable Architectures",
-                  "AI-Driven Solutions",
-                  "Enterprise Platforms",
-                  "Digital Experiences",
-                ]}
-                className="text-[rgb(139,94,41)] dark:text-[#f1b773cb] text-center h-[72px] sm:h-auto text-3xl md:text-5xl font-bold"
-              />
-            </div>
-          </motion.div>
-
-          {/* ── Description ── */}
-          <motion.p
-            variants={slideUp}
-            initial="hidden"
-            animate="visible"
-            custom={2.05}
-            className="text-sm md:text-base mt-7 max-w-2xl leading-relaxed"
-            style={{
-              color: isDark ? "rgb(148,163,184)" : "rgb(75,85,99)",
-              transition: "color 0.4s ease",
-            }}
-          >
-            I <strong>design, develop, and deploy</strong> intelligent digital solutions
-            that bridge creativity and technology. From AI-driven systems to responsive
-            web experiences, I craft ideas into impact — leveraging expertise in{" "}
-            <span className="text-red-600">AI</span> and{" "}
-            <span className="text-red-600">Web Development</span>.
-          </motion.p>
-
-          {/* ── Red CTA (bottom) ── */}
-          <motion.button
-            variants={slideUp}
-            initial="hidden"
-            animate="visible"
-            custom={2.25}
-            onClick={() => setIsContactOpen(true)}
-            className="mt-8 uppercase font-semibold text-xs tracking-[0.15em]
-              border-2 border-red-500 rounded-full px-8 py-4
-              transition-all duration-300 ease-in-out
-              hover:scale-110 hover:bg-red-600 hover:text-white hover:border-white
-              active:scale-95
-              shadow-[0_0_10px_rgba(255,0,0,0.2)]
-              hover:shadow-[0_0_28px_rgba(255,0,0,0.55)]"
-            style={{
-              backgroundColor: isDark ? "#ffffff" : "#000000",
-              color: isDark ? "#000000" : "#ffffff",
-              transition: "background-color 0.4s ease, color 0.4s ease",
-            }}
-          >
-            Let&apos;s Connect 🚀
-          </motion.button>
+      {/* Container to shift both text and constellation upwards by moving their center */}
+      <div className="relative w-full h-full -mt-24 md:-mt-32">
+        {/* Center Logo - Visually nudged right and down */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[100] mt-6 ml-14">
+          <StaticCenter />
         </div>
-      </section>
 
-      <ContactModal isOpen={isContactOpen} onClose={() => setIsContactOpen(false)} />
-    </>
+        {/* Orbiting Constellation - Absolutely positioned to guarantee perfect center alignment */}
+        {mounted && (
+          <div className="absolute top-1/2 left-1/2 w-0 h-0 z-10">
+            {planets.map((planet) => (
+              <OrbitingImage
+                key={planet.id}
+                planet={planet}
+                hoveredId={hoveredId}
+                setHoveredId={setHoveredId}
+              />
+            ))}
+          </div>
+        )}
+      </div>
+    </section>
   );
 }

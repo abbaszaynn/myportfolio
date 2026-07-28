@@ -63,15 +63,26 @@ export const works = [
       "A transformer-based model detecting hate speech in Urdu, Roman Urdu, and English texts. Fine-tuned BERT and XLM RoBERTa models to capture linguistic and contextual nuances for precise hate, offensive,and neutral classification.",
     className: "md:col-span-1",
     image: "/images/works/must-dashboard.jpg",
+    images: [
+      "/images/works/must-flagged.png", // 1. Wide landscape (Flagged Content)
+      "/images/works/must-sidebar.png", // 2. Tall portrait (Sidebar)
+      "/images/works/must-reports.png", // 3. Wide landscape (Reports & Audits)
+    ],
     link: "https://mustdashboard.vercel.app/"
   },
   {
     title: "Game of Stones",
     description:
-      "Game of Stones connects global investors with licensed mining operators across Gilgit Baltistan — copper, gold, lithium, nephrite, antimony, and polymetallic assets.",
+      "A digital platform showcasing investment opportunities in Gilgit Baltistan's mining sector. Features 3D virtual tours of our mineral assets from our partnered company.",
     className: "md:col-span-1",
-    image: "/images/works/gos-new.png",
-    link: "https://game-of-stones.vercel.app/"
+    image: "/images/works/gos.jpg",
+    images: [
+      "/images/works/gos-1.png", // 1. Game of Stones 3D rocks (Landscape)
+      "/images/works/gos-2.png", // 2. Explore the mines map (Landscape)
+      "/images/works/gos-3.png", // 3. The Game of Stones Archive (Landscape)
+      "/images/works/gos-4.png", // 4. Zircon Mines field photos (Portrait)
+    ],
+    link: "https://gameofstones.pk/"
   },
   {
     title: "TheNest-Camp Management System",
