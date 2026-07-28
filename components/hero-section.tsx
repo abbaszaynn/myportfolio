@@ -70,17 +70,17 @@ function OrbitingImage({
     accumulatedTime.current += deltaTime;
 
     const t = accumulatedTime.current;
-    
+
     // Slow, elegant 3D orbit
-    const currentAngle = (planet.angle * Math.PI) / 180 + t * 0.00004; 
-    
+    const currentAngle = (planet.angle * Math.PI) / 180 + t * 0.00004;
+
     // Calculate 2D position (Rigid layout - no organic bobbing to maintain ladder formation)
     const posX = Math.cos(currentAngle) * planet.radiusX;
     const posY = Math.sin(currentAngle) * planet.radiusY;
-    
+
     x.set(posX);
     y.set(posY);
-    
+
     // 3D Depth illusion: Scale down when moving "back", scale up when "front"
     const depth = Math.sin(currentAngle); // -1 (top/back) to 1 (bottom/front)
     scaleDepth.set(1 + depth * 0.15); // Scale varies from 0.85 to 1.15
@@ -103,7 +103,7 @@ function OrbitingImage({
       <motion.div
         className="relative overflow-hidden cursor-crosshair -translate-x-1/2 -translate-y-1/2 shadow-2xl group"
         style={{ width: planet.width, height: planet.height }}
-        animate={{ 
+        animate={{
           scale: isHovered ? 1.15 : 1, // Increase size of the hovered image wrapper
           opacity: currentOpacity,
           filter: currentFilter,
@@ -168,15 +168,21 @@ export default function HeroSection() {
         <Link href="#consultation" className="font-sans pl-1 text-[9px] md:text-[10px] uppercase font-semibold tracking-[0.2em] text-white/70 hover:text-white transition-colors duration-300">
           Consultation
         </Link>
-        <Link href="#about" className="font-sans pl-1 text-[9px] md:text-[10px] uppercase font-semibold tracking-[0.2em] text-white/70 hover:text-white transition-colors duration-300">
-          About
-        </Link>
+        {/* Placeholder element to maintain flex-between spacing since About moved */}
+        <div className="h-4"></div>
       </div>
 
       {/* Right Top - Connect */}
       <div className="absolute top-8 right-8 md:top-12 md:right-12 z-50 pointer-events-auto">
         <Link href="#connect" className="font-sans text-[9px] md:text-[10px] uppercase font-semibold tracking-[0.2em] text-white/70 hover:text-white transition-colors duration-300">
           Connect
+        </Link>
+      </div>
+
+      {/* Right Bottom - About */}
+      <div className="absolute bottom-8 right-8 md:bottom-12 md:right-12 z-50 pointer-events-auto">
+        <Link href="/about" className="font-sans border border-white/50 px-4 py-2 rounded-sm text-[9px] md:text-[10px] uppercase font-semibold tracking-[0.2em] text-white hover:bg-white hover:text-black transition-colors duration-300">
+          About
         </Link>
       </div>
 
