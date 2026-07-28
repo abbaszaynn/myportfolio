@@ -5,6 +5,7 @@ import Skills from "@/components/skills";
 import Works from "@/components/works-section";
 import PhotographySection from "@/components/PhotographySection";
 import CertificationsSection from "@/components/certifications-section";
+import Footer from "@/components/footer";
 
 export default function Home() {
   return (
@@ -37,6 +38,8 @@ export default function Home() {
 
       {/* Act VII — Certifications */}
       <CertificationsSection />
+
+      <Footer />
     </main>
   );
 }

@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { spaceGrotesk } from "@/data/constants/fonts";
-import Footer from "@/components/footer";
 import SmoothScroll from "@/components/smooth-scroll";
 import { Analytics } from "@vercel/analytics/react";
 
@@ -32,7 +31,6 @@ export default function RootLayout({
         >
           <SmoothScroll>
             {children}
-            <Footer />
           </SmoothScroll>
         </ThemeProvider>
       </body>

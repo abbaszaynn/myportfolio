@@ -169,21 +169,22 @@ export default function HeroSection() {
           Consultation
         </Link>
         {/* Placeholder element to maintain flex-between spacing since About moved */}
-        <div className="h-4"></div>
+        <div className="h-4 text-[9px] md:text-[10px]"></div>
       </div>
 
-      {/* Right Top - Connect */}
-      <div className="absolute top-8 right-8 md:top-12 md:right-12 z-50 pointer-events-auto">
-        <Link href="#connect" className="font-sans text-[9px] md:text-[10px] uppercase font-semibold tracking-[0.2em] text-white/70 hover:text-white transition-colors duration-300">
+      {/* Right Vertical Branding & Nav - Spaced evenly across full height to align perfectly with left side */}
+      <div className="absolute py-8 md:py-12 right-8 md:right-12 top-0 bottom-0 z-50 flex flex-col justify-between items-end pointer-events-auto text-right">
+        <Link href="#connect" className="font-sans pr-1 text-[9px] md:text-[10px] uppercase font-semibold tracking-[0.2em] text-white/70 hover:text-white transition-colors duration-300">
           Connect
         </Link>
-      </div>
-
-      {/* Right Bottom - About */}
-      <div className="absolute bottom-8 right-8 md:bottom-12 md:right-12 z-50 pointer-events-auto">
-        <Link href="/about" className="font-sans border border-white/50 px-4 py-2 rounded-sm text-[9px] md:text-[10px] uppercase font-semibold tracking-[0.2em] text-white hover:bg-white hover:text-black transition-colors duration-300">
+        {/* Placeholder aligns with Works */}
+        <div className="h-4 text-[9px] md:text-[10px]"></div>
+        {/* About aligns with Consultation */}
+        <Link href="/about" className="font-sans pr-1 text-[9px] md:text-[10px] uppercase font-semibold tracking-[0.2em] text-white/70 hover:text-white transition-colors duration-300">
           About
         </Link>
+        {/* Placeholder aligns with left bottom placeholder */}
+        <div className="h-4 text-[9px] md:text-[10px]"></div>
       </div>
 
       {/* Background overlay that dims everything down when hovered */}

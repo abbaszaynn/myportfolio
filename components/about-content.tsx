@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { motion, useInView } from "framer-motion";
 import { cormorant, spaceGrotesk } from "@/data/constants/fonts";
+import { socialMedia } from "@/data/index";
 
 export default function AboutContent() {
   const FadeIn = ({ children, delay = 0 }: { children: React.ReactNode, delay?: number }) => {
@@ -158,6 +159,29 @@ export default function AboutContent() {
             </div>
           </div>
         </FadeIn>
+
+        {/* Simple Footer Bar matching light theme */}
+        <div className="w-full border-t border-black/10 mt-24 pt-8 flex flex-col md:flex-row justify-between items-center gap-6">
+          <p className={`${spaceGrotesk.className} text-[11px] tracking-[0.15em] text-black/60 font-semibold`}>
+            &copy; {new Date().getFullYear()} Zayn Abbas. All rights reserved.
+          </p>
+
+          <div className="flex items-center gap-4">
+            {socialMedia.map((info) => (
+              <a
+                key={info.id}
+                href={info.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-10 h-10 rounded-full border border-black/10 flex items-center justify-center
+                  text-black/60 hover:text-[#c9a55a] hover:border-[#c9a55a]/50
+                  transition-all duration-300 cursor-pointer"
+              >
+                <span className="text-sm">{info.img}</span>
+              </a>
+            ))}
+          </div>
+        </div>
 
       </div>
     </div>

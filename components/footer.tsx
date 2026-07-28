@@ -25,7 +25,7 @@ export default function Footer() {
             animate={isInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.8 }}
           >
-            Get In Touch
+            Connect
           </motion.span>
 
           <motion.h2
