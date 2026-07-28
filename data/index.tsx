@@ -125,6 +125,59 @@ export const works = [
   },
 ];
 
+export const certifications = [
+  {
+    title: "Generative AI Tools and Applications",
+    issuer: "Edureka",
+    link: "https://coursera.org/verify/BU4PQBY55P5X"
+  },
+  {
+    title: "Generative AI for Workflow Automation",
+    issuer: "Edureka",
+    link: "https://coursera.org/verify/V5XKMOFJWN8J"
+  },
+  {
+    title: "Generative AI and Prompt Engineering Essentials",
+    issuer: "Edureka",
+    link: "https://coursera.org/verify/LN02CPNCQF14"
+  },
+  {
+    title: "Cyber Security - Application of AI",
+    issuer: "Macquarie University",
+    link: "https://coursera.org/verify/F4VFB10FYSBK"
+  },
+  {
+    title: "Foundations of Project Management",
+    issuer: "Coursera",
+    link: "https://coursera.org/verify/YISBFYYADEVC"
+  },
+  {
+    title: "Project Initiation: Starting a Successful Project",
+    issuer: "Coursera",
+    link: "https://coursera.org/verify/080H0DQWYFYP"
+  },
+  {
+    title: "Project Planning: Putting It All Together",
+    issuer: "Coursera",
+    link: "https://coursera.org/verify/RPH58OJCJ5S0"
+  },
+  {
+    title: "Project Execution: Running the Project",
+    issuer: "Coursera",
+    link: "https://coursera.org/verify/4ZRAA6KCPYME"
+  },
+  {
+    title: "Agile Project Management",
+    issuer: "Coursera",
+    link: "https://coursera.org/verify/GR3KR6Z165H6"
+  },
+  {
+    title: "Capstone: Applying Project Management in the Real World",
+    issuer: "Coursera",
+    link: "https://coursera.org/verify/LT52EUPZFWPB"
+  }
+];
+
 export const socialMedia = [
   {
     id: 1,

@@ -4,6 +4,7 @@ import Services from "@/components/services";
 import Skills from "@/components/skills";
 import Works from "@/components/works-section";
 import PhotographySection from "@/components/PhotographySection";
+import CertificationsSection from "@/components/certifications-section";
 
 export default function Home() {
   return (
@@ -33,6 +34,9 @@ export default function Home() {
 
       {/* Act VI — Through My Lens */}
       <PhotographySection />
+
+      {/* Act VII — Certifications */}
+      <CertificationsSection />
     </main>
   );
 }
