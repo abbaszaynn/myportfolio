@@ -193,7 +193,7 @@ export default function HeroSection() {
       {/* Right Vertical Branding & Nav - Spaced evenly across full height to align perfectly with left side */}
       <div className="absolute pt-12 pb-32 md:py-12 right-8 md:right-12 top-0 bottom-0 z-50 flex flex-col justify-between items-end pointer-events-auto text-right">
         <div className="flex items-center h-6">
-          <Link href="/contact" className="font-sans pr-1 text-[9px] md:text-[10px] uppercase font-semibold tracking-[0.2em] text-white/70 hover:text-white transition-colors duration-300 leading-none">
+          <Link href="/contact" className="font-sans pr-1 text-[9px] md:text-[10px] uppercase font-semibold tracking-[0.2em] text-white/70 hover:text-white transition-colors duration-300 leading-none translate-y-[3px] md:translate-y-0">
             Connect
           </Link>
         </div>
@@ -229,7 +229,7 @@ export default function HeroSection() {
 
         {/* Orbiting Constellation - Absolutely positioned to guarantee perfect center alignment */}
         {mounted && (
-          <div className="absolute top-[45%] md:top-1/2 left-[80%] md:left-1/2 w-0 h-0 z-10">
+          <div className="absolute top-[45%] md:top-1/2 left-[80%] md:left-1/2 w-0 h-0 z-10 -mt-8 md:mt-0">
             {planets.map((planet) => (
               <OrbitingImage
                 key={planet.id}
