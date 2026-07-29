@@ -25,7 +25,7 @@ export default function AboutContent() {
 
   return (
     <div className="w-full min-h-screen bg-[#EFEBE6] text-[#0a0a0a] pb-32">
-      
+
       {/* Top Navigation */}
       <div className="w-full flex justify-between items-center p-8 md:p-12 sticky top-0 z-50 bg-[#EFEBE6]/90 backdrop-blur-md">
         <Link href="/">
@@ -42,21 +42,20 @@ export default function AboutContent() {
       </div>
 
       <div className="w-full max-w-5xl mx-auto px-6 md:px-12 flex flex-col gap-24 md:gap-32 mt-4 md:mt-8">
-        
+
         {/* Intro Block with Photo 1 */}
         <FadeIn>
           <div className="w-full flex flex-col gap-12">
             <div className="w-full h-[50vh] md:h-[600px] relative overflow-hidden">
               <Image
-                src="/images/about/photo1.jpg"
+                src="/images/about/cover.jpg"
                 alt="Zain Abbas Intro"
                 fill
                 priority
-                className="object-cover"
-                style={{ objectPosition: 'center 10%' }}
+                className="object-cover object-top md:object-[center_10%]"
               />
             </div>
-            
+
             <div className="w-full md:w-3/4 lg:w-2/3 flex flex-col gap-6">
               <h1 className={`${cormorant.className} text-4xl md:text-5xl lg:text-6xl tracking-tight leading-[1.1]`}>
                 Zain Abbas
@@ -83,11 +82,11 @@ export default function AboutContent() {
                   MUST: An Explainable AI-Based Framework for Multilingual Hate Speech Detection
                 </h2>
               </div>
-              
+
               <p className={`${spaceGrotesk.className} text-sm md:text-base leading-relaxed text-black/70`}>
                 Published in IEEE Access (2025). This paper explores fine-tuning XLM-RoBERTa for multilingual hate-speech classification (English, Urdu, Roman Urdu) integrating LIME and SHAP explainability for content-moderation transparency, achieving 95.7% accuracy.
               </p>
-              
+
               <div className="flex flex-col sm:flex-row gap-4 mt-2">
                 <a href="https://doi.org/10.1109/ACCESS.2025.3629527" target="_blank" rel="noopener noreferrer" className="border border-black px-6 py-3 text-[10px] uppercase tracking-widest font-bold hover:bg-black hover:text-[#EFEBE6] transition-all text-center">
                   Read Paper
@@ -98,7 +97,7 @@ export default function AboutContent() {
               </div>
             </div>
             <div className="w-full md:w-1/2 h-[300px] md:h-[500px] relative overflow-hidden">
-              <Image src="/images/about/photo2.jpg" alt="Publication Context" fill className="object-cover" />
+              <Image src="/images/about/1.jpeg" alt="Publication Context" fill className="object-cover" />
             </div>
           </div>
         </FadeIn>
@@ -110,7 +109,7 @@ export default function AboutContent() {
               <Image src="/images/about/photo3.jpg" alt="Professional Experience" fill className="object-cover" />
             </div>
             <div className="w-full md:w-7/12 flex flex-col gap-16">
-              
+
               <div className="flex flex-col gap-4">
                 <h3 className={`${cormorant.className} text-2xl md:text-3xl`}>Horizon Bee Tech</h3>
                 <p className={`${spaceGrotesk.className} text-[10px] uppercase tracking-widest text-black/40 font-bold mb-2`}>AI Automation Engineer</p>

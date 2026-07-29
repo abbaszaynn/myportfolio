@@ -75,7 +75,7 @@ export const works = [
     description:
       "A digital platform showcasing investment opportunities in Gilgit Baltistan's mining sector. Features 3D virtual tours of our mineral assets from our partnered company.",
     className: "md:col-span-1",
-    image: "/images/works/gos.jpg",
+    image: "/images/works/project2.jpg",
     images: [
       "/images/works/gos-1.png", // 1. Game of Stones 3D rocks (Landscape)
       "/images/works/gos-2.png", // 2. Explore the mines map (Landscape)
@@ -211,6 +211,7 @@ export const skills = [
   { name: "Systems Architecture", description: "", percentage: 91 },
   { name: "Web Development", description: "", percentage: 89 },
   { name: "Cloud & DevOps", description: "", percentage: 92 },
+  { name: "Business Development & Project Management", description: "", percentage: 89 },
 ];
 
 export const skillsIcons = [

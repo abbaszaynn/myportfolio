@@ -27,7 +27,7 @@ function WorksCarousel({ projects }: { projects: typeof works }) {
   // We want a perfect circle. 36 degrees * 10 items = 360 degrees.
   const theta = 36;
   const numWheelItems = 10;
-  
+
   // Create an array of 10 items by repeating the projects array
   const wheelItems = Array.from({ length: numWheelItems }, (_, i) => projects[i % projects.length]);
 
@@ -40,10 +40,10 @@ function WorksCarousel({ projects }: { projects: typeof works }) {
 
   return (
     <div className="flex flex-col md:flex-row items-center w-full min-h-[500px] md:min-h-[600px] relative overflow-hidden py-12 md:py-0">
-      
+
       {/* LEFT COLUMN: Text Content */}
       <div className="w-full md:w-1/2 flex flex-col justify-center px-4 md:px-12 z-20 h-[350px] md:h-auto">
-        
+
         <div className="relative h-[280px] md:h-[250px] w-full mb-6 md:mb-8">
           <AnimatePresence mode="wait">
             <motion.div
@@ -63,10 +63,10 @@ function WorksCarousel({ projects }: { projects: typeof works }) {
               <p className={`${spaceGrotesk.className} text-[#888] text-xs md:text-sm leading-relaxed max-w-md mb-6`}>
                 {activeProject.description}
               </p>
-              <a 
-                href={activeProject.link} 
-                target="_blank" 
-                rel="noopener noreferrer" 
+              <a
+                href={activeProject.link}
+                target="_blank"
+                rel="noopener noreferrer"
                 className={`${spaceGrotesk.className} inline-flex items-center gap-2 text-[10px] tracking-[0.2em] uppercase text-white/60 hover:text-[#D4AF37] transition-colors`}
               >
                 <span>Visit Project</span><ArrowUpRight className="w-3 h-3" />
@@ -88,9 +88,9 @@ function WorksCarousel({ projects }: { projects: typeof works }) {
 
       {/* RIGHT COLUMN: Half-Circle Reel */}
       <div className="w-full md:w-1/2 relative h-[400px] md:h-[600px] mt-8 md:mt-0 flex items-center justify-end md:justify-center pointer-events-none overflow-hidden md:overflow-visible">
-        
+
         <motion.div
-          className="absolute right-[-100px] md:right-[-300px] w-[400px] h-[400px] md:w-[700px] md:h-[700px] rounded-full border border-white/[0.02]"
+          className="absolute right-[-200px] md:right-[-300px] w-[400px] h-[400px] md:w-[700px] md:h-[700px] rounded-full border border-white/[0.02]"
           animate={{ rotate: activeIndex * theta }}
           transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
           style={{ originX: 0.5, originY: 0.5 }}
@@ -98,7 +98,7 @@ function WorksCarousel({ projects }: { projects: typeof works }) {
           {wheelItems.map((item, i) => {
             const angle = -i * theta;
             const isActive = activeWheelIndex === i;
-            
+
             return (
               <motion.div
                 key={i}
@@ -118,7 +118,7 @@ function WorksCarousel({ projects }: { projects: typeof works }) {
                   setActiveIndex((prev) => prev + diff);
                 }}
               >
-                <motion.div 
+                <motion.div
                   className="relative overflow-hidden rounded-xl shadow-2xl border border-white/10 origin-center"
                   style={{
                     x: -radius,
@@ -134,11 +134,11 @@ function WorksCarousel({ projects }: { projects: typeof works }) {
                   }}
                   transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
                 >
-                  <Image 
-                    src={item.image} 
-                    alt={item.title} 
-                    fill 
-                    className="object-cover" 
+                  <Image
+                    src={item.image}
+                    alt={item.title}
+                    fill
+                    className="object-cover"
                   />
                 </motion.div>
               </motion.div>
@@ -167,7 +167,7 @@ export default function Works() {
         <p className={`${spaceGrotesk.className} text-[10px] tracking-[0.4em] uppercase text-[#D4AF37] mb-6 font-semibold`}>
           Our Latest Projects
         </p>
-        
+
         <h2 className={`flex flex-col items-center justify-center text-center leading-[1.1] tracking-tight`}>
           <span className={`${spaceGrotesk.className} uppercase text-2xl md:text-3xl lg:text-4xl font-bold text-white/95`}>
             ARCHITECTING <span className={`${cormorant.className} text-[#D4AF37] font-light italic lowercase text-3xl md:text-4xl lg:text-5xl`}>robust</span>
@@ -176,7 +176,7 @@ export default function Works() {
             SOFTWARE <span className={`${cormorant.className} text-white font-medium uppercase`}>SYSTEMS</span>
           </span>
         </h2>
-        
+
         <p className={`${spaceGrotesk.className} mt-6 text-[#888] max-w-lg text-xs leading-relaxed uppercase tracking-widest`}>
           Delivering high-performance ML models, scalable architectures, and intelligent automation built to drive impact.
         </p>
