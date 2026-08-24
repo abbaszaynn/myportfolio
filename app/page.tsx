@@ -2,6 +2,7 @@ import Citation from "@/components/citation-section";
 import HeroSection from "@/components/hero-section";
 import Services from "@/components/services";
 import Skills from "@/components/skills";
+import TechStack from "@/components/tech-stack";
 import Works from "@/components/works-section";
 import PhotographySection from "@/components/PhotographySection";
 import CertificationsSection from "@/components/certifications-section";
@@ -27,6 +28,9 @@ export default function Home() {
       <div className="container">
         <Skills />
       </div>
+
+      {/* Act IV.V — Tech Stack Deep Dive */}
+      <TechStack />
 
       {/* Act V — The Showcase */}
       <div className="container">

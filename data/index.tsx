@@ -11,6 +11,7 @@ import { FaGithub, FaLinkedinIn, FaInstagram, FaWhatsapp, FaEnvelope } from "rea
 export const navItems = [
   { name: "Services", link: "#services" },
   { name: "Skills", link: "#skills" },
+  { name: "Tech Stack", link: "#techstack" },
   { name: "Works", link: "#works" },
   { name: "Contact", link: "#contact" },
 ];
@@ -71,18 +72,12 @@ export const works = [
     link: "https://mustdashboard.vercel.app/"
   },
   {
-    title: "Game of Stones",
+    title: "GBMINES",
     description:
-      "A digital platform showcasing investment opportunities in Gilgit Baltistan's mining sector. Features 3D virtual tours of our mineral assets from our partnered company.",
+      "Durr & Zircon Consortium operates three licensed mining companies across Gilgit Baltistan, extracting copper, gold, lithium, nephrite and polymetallic ore under full regulatory compliance.",
     className: "md:col-span-1",
-    image: "/images/works/project2.jpg",
-    images: [
-      "/images/works/gos-1.png", // 1. Game of Stones 3D rocks (Landscape)
-      "/images/works/gos-2.png", // 2. Explore the mines map (Landscape)
-      "/images/works/gos-3.png", // 3. The Game of Stones Archive (Landscape)
-      "/images/works/gos-4.png", // 4. Zircon Mines field photos (Portrait)
-    ],
-    link: "https://gameofstones.pk/"
+    image: "/images/works/gbnines.jpg",
+    link: "https://gbmines.com/"
   },
   {
     title: "TheNest-Camp Management System",
@@ -90,6 +85,14 @@ export const works = [
     className: "md:col-span-1",
     image: "/images/works/thenest.png",
     link: "https://drive.google.com/drive/folders/1zKuvclKsyEmrHAwSKMqsxDo-utZOzC0U?usp=sharing"
+  },
+  {
+    title: "Consortium expenditure & accountability",
+    description:
+      "Durr Mines & Minerals · Zircon Mines Access is by invitation. Your email must already be on the consortium's director list — signing up with any other address will not grant access to either company's records. you can ask for demo and i can provide credentials",
+    className: "md:col-span-1",
+    image: "/images/works/zirconix.jpg",
+    link: "https://zirconix.gbmines.com/"
   },
   {
     title: "Mine Explorer- The Game of Stones",
