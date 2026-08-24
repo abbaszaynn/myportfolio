@@ -169,7 +169,7 @@ function FloatingIcon({ icon: IconDef }: { icon: FloatingIconDef }) {
       className="absolute"
       style={{ top: IconDef.top, left: IconDef.left, x: springX, y: springY }}
       initial={{ opacity: 0, scale: 0.5 }}
-      animate={{ opacity: 0.7, scale: 1 }}
+      animate={{ opacity: 0.08, scale: 1 }}
       transition={{ delay: IconDef.delay, duration: 0.8, ease: "easeOut" }}
     >
       <motion.div
@@ -186,8 +186,8 @@ function FloatingIcon({ icon: IconDef }: { icon: FloatingIconDef }) {
         }}
       >
         <IconDef.Icon
-          width={IconDef.size}
-          height={IconDef.size}
+          width={IconDef.size * 0.65}
+          height={IconDef.size * 0.65}
         />
       </motion.div>
     </motion.div>
@@ -238,12 +238,10 @@ const categories: TechCategory[] = [
 function TechCard({
   category,
   index,
-  hasPlus,
   bgHighlight,
 }: {
   category: TechCategory;
   index: number;
-  hasPlus?: "br" | "bl" | "br-bl";
   bgHighlight?: boolean;
 }) {
   const ref = useRef<HTMLDivElement>(null);
@@ -260,7 +258,7 @@ function TechCard({
         ease: [0.22, 1, 0.36, 1],
       }}
       className={cn(
-        "relative flex flex-col items-center justify-center px-6 py-8 md:px-8 md:py-10",
+        "relative flex flex-col items-center justify-center px-6 py-8 md:px-8 md:py-10 h-full w-full",
         bgHighlight
           ? "bg-white/[0.04]"
           : "bg-transparent"
@@ -279,72 +277,43 @@ function TechCard({
       >
         {category.items}
       </p>
-
-      {/* Plus icons at intersections */}
-      {(hasPlus === "br" || hasPlus === "br-bl") && (
-        <PlusIcon
-          className="absolute -right-[11px] -bottom-[11px] z-10 size-[22px] text-white/20"
-          strokeWidth={1}
-        />
-      )}
-      {(hasPlus === "bl" || hasPlus === "br-bl") && (
-        <PlusIcon
-          className="absolute -left-[11px] -bottom-[11px] z-10 hidden size-[22px] text-white/20 md:block"
-          strokeWidth={1}
-        />
-      )}
     </motion.div>
   );
 }
 
 function TechLogoCloud() {
   return (
-    <div className="relative grid grid-cols-2 md:grid-cols-3 border-x border-white/[0.08]">
-      {/* Top border */}
-      <div className="absolute -top-px left-1/2 -translate-x-1/2 pointer-events-none w-full max-w-3xl border-t border-white/[0.08]" />
-
-      {/* Row 1 */}
-      <TechCard
-        category={categories[0]}
-        index={0}
-        bgHighlight
-        hasPlus="br"
-      />
-      <div className="border-x border-white/[0.08]">
-        <TechCard
-          category={categories[1]}
-          index={1}
-        />
-      </div>
-      <TechCard
-        category={categories[2]}
-        index={2}
-        bgHighlight
-        hasPlus="br-bl"
-      />
-
-      {/* Row divider */}
-      <div className="col-span-2 md:col-span-3 border-t border-white/[0.08]" />
-
-      {/* Row 2 */}
-      <TechCard
-        category={categories[3]}
-        index={3}
-      />
-      <div className="border-x border-white/[0.08]">
-        <TechCard
-          category={categories[4]}
-          index={4}
-          bgHighlight
-        />
-      </div>
-      <TechCard
-        category={categories[5]}
-        index={5}
-      />
-
-      {/* Bottom border */}
-      <div className="absolute -bottom-px left-1/2 -translate-x-1/2 pointer-events-none w-full max-w-3xl border-b border-white/[0.08]" />
+    <div className="relative grid grid-cols-2 md:grid-cols-3 border border-white/[0.08]">
+      {categories.map((category, index) => (
+        <div
+          key={index}
+          className={cn(
+            "relative", // For absolute plus icons
+            index % 2 === 0 ? "border-r border-white/[0.08]" : "", // Mobile: vertical
+            index < 4 ? "border-b border-white/[0.08]" : "", // Mobile: horizontal
+            "md:border-r-0 md:border-b-0", // Reset mobile
+            index % 3 !== 2 ? "md:border-r md:border-white/[0.08]" : "", // Desktop: vertical
+            index < 3 ? "md:border-b md:border-white/[0.08]" : "" // Desktop: horizontal
+          )}
+        >
+          <TechCard category={category} index={index} bgHighlight={index % 2 === 0} />
+          
+          {/* Mobile Plus: bottom-right of index 0 and 2 */}
+          {(index === 0 || index === 2) && (
+            <PlusIcon
+              className="absolute -right-[11px] -bottom-[11px] z-10 size-[22px] text-white/20 md:hidden"
+              strokeWidth={1}
+            />
+          )}
+          {/* Desktop Plus: bottom-right of index 0 and 1 */}
+          {(index === 0 || index === 1) && (
+            <PlusIcon
+              className="absolute -right-[11px] -bottom-[11px] z-10 hidden size-[22px] text-white/20 md:block"
+              strokeWidth={1}
+            />
+          )}
+        </div>
+      ))}
     </div>
   );
 }
@@ -362,7 +331,7 @@ export default function TechStack() {
       className="py-24 md:py-32 relative overflow-hidden"
     >
       {/* ── Floating background icons (faded) ── */}
-      <div className="absolute inset-0 w-full h-full">
+      <div className="absolute inset-0 w-full h-full -z-10 pointer-events-none">
         {floatingIcons.map((icon) => (
           <FloatingIcon key={icon.id} icon={icon} />
         ))}
